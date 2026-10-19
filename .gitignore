@@ -1,0 +1,44 @@
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+*.secret
+secrets/
+credentials/
+private/
+*.pem
+*.key
+*.pfx
+*.p12
+*.cer
+*.crt
+id_rsa
+id_ed25519
+*credential*
+*password*
+*token*
+
+# Logs and transient output
+*.log
+*.tmp
+*.temp
+*.bak
+*.old
+*.dump
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local VM exports and large artifacts
+*.ova
+*.ovf
+*.vdi
+*.vmdk
+*.vbox
+*.vbox-prev

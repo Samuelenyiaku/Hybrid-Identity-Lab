@@ -1,0 +1,1 @@
+Hybrid identity evidence will go here after synchronization is configured and validated. Capture sync health and pilot identity results; never include credentials, tokens, or private keys.

@@ -1,0 +1,1 @@
+VirtualBox evidence will go here. Add screenshots of VM roles, resource settings, network mode, and snapshots. Redact unrelated host details before committing.

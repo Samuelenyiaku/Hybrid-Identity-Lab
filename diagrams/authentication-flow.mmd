@@ -1,0 +1,10 @@
+flowchart TD
+    USER["Lab test user"] --> CLIENT["Browser or test client"]
+    CLIENT --> APP["Protected test application"]
+    APP --> IDP["Configured identity provider"]
+    IDP --> POLICY{"User assigned and policy satisfied?"}
+    POLICY -->|Yes| ASSERT["Issue valid authentication response"]
+    ASSERT --> ACCESS["Application grants session"]
+    POLICY -->|No| DENY["Access denied"]
+    ACCESS --> LOG["Review sign-in / app logs"]
+    DENY --> LOG

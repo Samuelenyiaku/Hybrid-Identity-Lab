@@ -1,0 +1,1 @@
+Active Directory evidence will go here. Capture AD DS/DNS health, domain configuration, test OU/users, and domain-client validation. Redact personal data and any sensitive system details.

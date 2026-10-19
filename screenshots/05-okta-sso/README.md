@@ -1,0 +1,1 @@
+Okta SSO evidence will go here after a non-production app integration is configured. Include redacted allowed/denied sign-in outcomes and troubleshooting notes; never include secrets.

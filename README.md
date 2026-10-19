@@ -81,7 +81,7 @@ flowchart LR
 - **[`screenshots/`](screenshots/)** — sanitized visual evidence, organized by milestone
 - **[`progress/roadmap.md`](progress/roadmap.md)** — completion checklist and next actions
 
-*The supporting files will be added as the repository is expanded; links above describe the intended project structure.*
+Supporting guides, roadmap checklists, and evidence instructions are now included. Screenshot evidence itself will be added as each milestone is completed.
 
 ## Validation quick start
 

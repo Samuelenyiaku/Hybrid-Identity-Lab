@@ -1,0 +1,1 @@
+Entra ID evidence will go here after tenant setup. Capture only the minimum needed to demonstrate configuration; redact tenant identifiers and personal information when they are not necessary.

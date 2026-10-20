@@ -13,7 +13,7 @@
 
 A practical, evidence-driven lab for building and troubleshooting an on-premises Active Directory environment and extending it toward Microsoft Entra ID, identity synchronization, and Okta single sign-on. This repository documents the build, the tests, what worked, and what still needs to be completed.
 
-> **Portfolio note:** The local Active Directory foundation is in place. Entra ID integration and Okta SSO are roadmap items until their configuration and validation evidence are added here.
+> **Portfolio note:** The local Active Directory foundation is in place. A KDS root-key / gMSA exercise is in progress. Entra ID integration and Okta SSO remain roadmap items until their configuration and validation evidence are added here.
 
 ## Lab at a glance
 
@@ -21,12 +21,14 @@ A practical, evidence-driven lab for building and troubleshooting an on-premises
 |---|---|---|
 | VirtualBox lab foundation | Complete | Windows Server virtual machines and snapshots prepared |
 | Active Directory Domain Services | Complete | Lab domain: `skrillsam.org` |
-| Domain-joined Windows client | Complete | Reported client address: `192.168.56.20` |
+| Domain-joined Windows client | Validated | PowerShell showed `PartOfDomain = True` and secure-channel validation returned `True` |
+| DNS | Validated | Forward lookup zone and lab host records inspected |
 | Test identities | Complete | Test users created for directory and authentication exercises |
+| KDS root key / gMSA | In progress | Waiting for the applicable KDS root-key safety interval, then validate gMSA behavior |
 | Microsoft Entra tenant | Next | Tenant setup and safe lab configuration |
 | Hybrid identity / sync | Planned | Configure only after tenant and source-directory readiness checks |
 | Okta SSO | Planned | Add an application integration and document sign-in tests |
-| Security validation and evidence | In progress | Add sanitized screenshots, command output, and troubleshooting notes |
+| Screenshot evidence | Local files prepared | Commit and verify the five screenshots on GitHub before marking repository evidence complete |
 
 ## Target architecture
 
@@ -64,10 +66,11 @@ flowchart LR
 |---|---|---|
 | 01 — Foundation | VirtualBox network, VM roles, checkpoints | VM settings and network diagram |
 | 02 — Active Directory | AD DS, DNS, users, groups, domain join | ADUC, domain details, validation output |
-| 03 — Entra ID | Lab tenant and baseline security settings | Sanitized tenant setup notes |
-| 04 — Hybrid identity | Sync prerequisites, scope, health checks | Sync status and a test-user validation |
-| 05 — Okta SSO | Test app, sign-in flow, access decisions | App configuration overview and redacted test results |
-| 06 — Hardening | Least privilege, sign-in controls, recovery plan | Security checklist and troubleshooting records |
+| 03 — Service accounts | KDS root key and a test gMSA | Root-key state, authorized host validation, sanitized output |
+| 04 — Entra ID | Lab tenant and baseline security settings | Sanitized tenant setup notes |
+| 05 — Hybrid identity | Sync prerequisites, scope, health checks | Sync status and a test-user validation |
+| 06 — Okta SSO | Test app, sign-in flow, access decisions | App configuration overview and redacted test results |
+| 07 — Hardening | Least privilege, sign-in controls, recovery plan | Security checklist and troubleshooting records |
 
 ## Repository map
 
@@ -75,13 +78,12 @@ flowchart LR
 - **[`docs/network-design.md`](docs/network-design.md)** — network assumptions, DNS, and connectivity checks
 - **[`docs/build-guide.md`](docs/build-guide.md)** — milestone-based build and validation guide
 - **[`docs/troubleshooting.md`](docs/troubleshooting.md)** — repeatable diagnostic workflow
+- **[`docs/kds-gmsa-readiness.md`](docs/kds-gmsa-readiness.md)** — KDS root-key checks and gMSA validation checklist
 - **[`diagrams/authentication-flow.mmd`](diagrams/authentication-flow.mmd)** — editable authentication-flow diagram
 - **[`labs/`](labs/)** — step-by-step lab exercises
 - **[`scripts/`](scripts/)** — validation and automation scripts
-- **[`screenshots/`](screenshots/)** — sanitized visual evidence, organized by milestone
+- **[`screenshots/`](screenshots/)** — visual evidence, organized by milestone
 - **[`progress/roadmap.md`](progress/roadmap.md)** — completion checklist and next actions
-
-Supporting guides, roadmap checklists, and evidence instructions are now included. Screenshot evidence itself will be added as each milestone is completed.
 
 ## Validation quick start
 
@@ -93,6 +95,7 @@ Get-ADDomain
 Get-ADForest
 Get-Service DNS, NTDS, Netlogon
 dcdiag /test:dns /v
+Get-KdsRootKey
 ```
 
 **On the domain-joined client:**
@@ -103,7 +106,12 @@ nltest /dsgetdc:skrillsam.org
 Test-ComputerSecureChannel -Verbose
 ```
 
-These commands are validation examples; capture and review the actual output from your environment rather than assuming a successful result.
+For a gMSA, validate from an authorized test host with the Active Directory module available:
+```powershell
+Test-ADServiceAccount -Identity <gMSAName>
+```
+
+These commands are validation examples; capture and review the actual output from your environment rather than assuming a successful result. Do not mark KDS/gMSA complete until the root key is effective and the authorized-host test succeeds.
 
 ## Security and evidence standards
 
@@ -116,7 +124,7 @@ These commands are validation examples; capture and review the actual output fro
 
 ## What this project demonstrates
 
-Hands-on identity infrastructure, Active Directory and DNS troubleshooting, PowerShell validation, hybrid identity planning, SSO concepts, security-minded documentation, and evidence-based problem solving.
+Hands-on identity infrastructure, Active Directory and DNS troubleshooting, PowerShell validation, service-account fundamentals, hybrid identity planning, SSO concepts, security-minded documentation, and evidence-based problem solving.
 
 ---
 

@@ -1,117 +1,130 @@
-# Hybrid Identity Engineering Lab
+# Hybrid Identity Lab | Active Directory + Microsoft Entra ID
 
-<p align="center">
-  <strong>Active Directory · Microsoft Entra ID · Hybrid Identity · Okta SSO · Zero Trust</strong>
-</p>
+> **Portfolio project · In progress**  
+> Building and validating an on-premises Active Directory environment, Microsoft Entra ID, hybrid identity synchronization, and eventually Okta SSO—with screenshots, repeatable checks, and troubleshooting notes.
 
-<p align="center">
-  <img alt="Status: In progress" src="https://img.shields.io/badge/status-in%20progress-blue?style=for-the-badge" />
-  <img alt="Platform: Windows Server" src="https://img.shields.io/badge/platform-Windows%20Server-0078D4?style=for-the-badge&logo=windows" />
-  <img alt="Automation: PowerShell" src="https://img.shields.io/badge/automation-PowerShell-5391FE?style=for-the-badge&logo=powershell" />
-  <img alt="Focus: Identity Security" src="https://img.shields.io/badge/focus-identity%20security-6A5ACD?style=for-the-badge" />
-</p>
+**Current milestone:** Microsoft Entra Connect Sync setup wizard completed successfully on October 21, 2026, and the wizard reported synchronization was initiated. **End-to-end sync is not yet verified.**
 
-A practical, evidence-driven lab for building and troubleshooting on-premises Active Directory, Microsoft Entra ID, identity synchronization, and Okta single sign-on. This repository distinguishes completed and observed work from planned integration so the portfolio remains technically accurate.
+[Roadmap](progress/roadmap.md) · [Build guide](docs/build-guide.md) · [Session log](progress/session-log.md) · [Architecture](docs/architecture.md) · [Troubleshooting](docs/troubleshooting.md)
 
-> **Current milestone (October 21, 2026):** The local AD DS/DNS foundation and Windows client domain membership are validated. Microsoft Entra Connect Sync has now completed its configuration wizard successfully, and the synchronization process has been initiated. The next step is to verify agent/service health and confirm that a pilot on-premises identity actually appears in Entra ID. Do not mark end-to-end synchronization complete until that validation succeeds. Okta SSO remains planned.
+---
 
-## Lab at a glance
+## Start here
 
-| Area | Current status | Notes |
+| If you're… | Go here |
+|---|---|
+| A recruiter or reviewer | [Project status](#project-status) and [What this demonstrates](#what-this-project-demonstrates) |
+| Following the build | [Build guide](docs/build-guide.md) |
+| Looking for completed work | [Progress roadmap](progress/roadmap.md) and [Session log](progress/session-log.md) |
+| Troubleshooting | [Troubleshooting guide](docs/troubleshooting.md) |
+| Reviewing design | [Architecture](docs/architecture.md) · [Network design](docs/network-design.md) |
+
+## Project status
+
+| Workstream | Status | Verified / observed so far |
 |---|---|---|
-| VirtualBox lab foundation | Complete | Windows Server virtual machines and snapshots prepared |
-| Active Directory Domain Services | Complete | Domain: `skrillsam.org`; domain controller: `DC01` |
-| Lab network | Configured | Host-only network; DC01: `192.168.56.10`; Windows client: `192.168.56.20` |
-| Domain-joined Windows client | Validated | PowerShell reported `PartOfDomain = True`; secure-channel validation was observed as successful |
-| DNS | Validated | DNS zone and lab records inspected; name-resolution checks performed |
-| On-premises test identities | Complete | Local lab users created for directory and authentication exercises |
-| Microsoft Entra ID tenant | Initial setup complete | Microsoft Entra ID Free tenant selected and portal access established |
-| Cloud-only test identity | Complete | `Lab Cloud User` created in Entra ID; separate from on-premises AD users |
-| Cloud security group | Complete | `SG-Cloud-Lab-Users` created for cloud identity exercises |
-| Microsoft Entra Connect Sync | Configured; validation pending | Wizard reported configuration succeeded and synchronization was initiated; verify service health and sync results |
-| Hybrid identity synchronization | In progress | Configuration wizard completed; an end-to-end synchronized pilot identity is not yet confirmed |
-| KDS root key / gMSA | In progress | Check root-key state and effective safety interval before gMSA validation |
-| Okta SSO | Planned | No application integration or end-to-end SSO test documented yet |
-| Screenshot evidence | Pending repository verification | Add sanitized screenshots to `screenshots/` and verify that they render on GitHub |
+| VirtualBox foundation | Complete (reported) | Server VMs and snapshots prepared |
+| Active Directory + DNS | Validated foundation | Windows Server 2019 DC01; lab domain `skrillsam.org` |
+| Windows client | Validated | CLIENT01 joined; PowerShell reported `PartOfDomain = True`; successful secure-channel validation was observed |
+| Lab DNS | Validated checks | Zone/records inspected and name-resolution checks performed |
+| On-premises test identities | Created | Dedicated lab accounts for directory exercises |
+| Entra ID tenant | Initial setup | Tenant portal access established |
+| Cloud test objects | Created | Cloud-only `Lab Cloud User` and `SG-Cloud-Lab-Users` |
+| Entra Connect Sync | **Configured; validating** | Wizard succeeded and initiated sync; service, scope, connector health, and synced pilot still need validation |
+| gMSA practice | In progress | KDS root-key readiness and gMSA validation still to do |
+| Okta SSO | Planned | No app integration or end-to-end test recorded |
+| Screenshot evidence | Pending | Wizard screenshots reviewed; repository upload/rendering still pending |
 
-## Architecture
+### Next actions
 
-The solid connections below represent the validated local lab. The cloud identity objects exist, but the dotted synchronization and SSO paths are **target state**, not completed integrations.
+1. **Review synchronization scope.** The wizard showed “Synchronize all users and devices.” Verify intended scope and narrow to a pilot OU/group if appropriate before proceeding.
+2. **Check sync health.** Confirm Microsoft Entra Connect Sync service/scheduler status and review connector import, synchronization, export, and errors.
+3. **Validate a pilot identity.** Verify one known on-premises test user appears in Entra ID with expected source and attributes.
+4. Capture sanitized evidence and record the observed outcome.
+5. Resume KDS/gMSA validation; plan Okta SSO after the identity foundation is stable.
+
+> **Status integrity:** Wizard completion is not proof of successful end-to-end synchronization. A cloud-only Entra account is not an AD-synchronized identity.
+
+## Architecture at a glance
+
+The local directory/client relationship and cloud objects are established. The sync connection below is **configured but not yet end-to-end validated**; Okta is future scope.
 
 ```mermaid
 flowchart LR
-    subgraph LOCAL["Local lab · VirtualBox"]
-        CLIENT["CLIENT01 · Windows client"]
-        DC["DC01 · Windows Server 2019<br/>AD DS + DNS"]
-        ADUSERS["On-premises test users"]
-        CLIENT -->|"DNS + domain authentication"| DC
-        ADUSERS --- DC
-    end
-
-    subgraph CLOUD["Microsoft Entra ID · Free"]
-        CLOUDUSER["Lab Cloud User"]
-        CLOUDGROUP["SG-Cloud-Lab-Users"]
-        AGENT["Cloud Sync agent<br/>not installed"]
-        CLOUDUSER --- CLOUDGROUP
-    end
-
-    subgraph FUTURE["Planned integration"]
-        OKTA["Okta"]
-        APP["Non-production test app"]
-    end
-
-    DC -. "sync not configured" .-> AGENT
-    AGENT -. "future provisioning" .-> CLOUD
-    CLOUD -. "future identity / access design" .-> APP
-    OKTA -. "future SSO integration" .-> APP
+  subgraph LAB["VirtualBox · Local lab"]
+    PC["CLIENT01 · Windows client"]
+    DC["DC01 · Windows Server 2019<br/>AD DS + DNS"]
+    USERS["On-prem test users"]
+    PC -->|"DNS + domain authentication"| DC
+    USERS --- DC
+  end
+  subgraph ENTRA["Microsoft Entra ID"]
+    CLOUD["Cloud-only Lab Cloud User"]
+    GROUP["SG-Cloud-Lab-Users"]
+    CLOUD --- GROUP
+  end
+  SYNC["Microsoft Entra Connect Sync"]
+  DC -. "configured · health/pilot pending" .-> SYNC
+  SYNC -. "sync initiated · result unverified" .-> ENTRA
+  subgraph LATER["Planned"]
+    OKTA["Okta SSO"]
+    APP["Non-production test app"]
+    OKTA -.-> APP
+  end
+  ENTRA -. "future SSO design" .-> APP
 ```
 
-## Recent progress log
+## Lab environment
 
-### October 21, 2026 — Entra Connect Sync configured
-- Completed the Microsoft Entra Connect Sync configuration wizard successfully.
-- The wizard reported that the synchronization process had been initiated.
-- The wizard selected password hash synchronization and the `mS-DS-ConsistencyGuid` source anchor.
-- The wizard displayed forest `SkrillSam.org` and the Entra tenant domain used for the lab.
-- Next: verify the synchronization service and scheduler, inspect sync errors, and confirm a test identity from the intended on-premises scope appears in Entra ID. Wizard completion alone does not prove end-to-end sync health.
+| Component | Current reference |
+|---|---|
+| Hypervisor | Oracle VirtualBox |
+| Domain | `skrillsam.org` |
+| Domain controller | `DC01` · Windows Server 2019 |
+| DC host-only IP | `192.168.56.10` |
+| Windows client | `CLIENT01` |
+| Client host-only IP | `192.168.56.20` |
+| Identity platform | Microsoft Entra ID |
+| Sync method | Microsoft Entra Connect Sync wizard configured |
+| Source anchor shown | `mS-DS-ConsistencyGuid` |
+| Authentication option shown | Password hash synchronization |
 
-### October 19–20, 2026 — Local directory and client validation
-- Built the `skrillsam.org` AD DS domain on Windows Server 2019 `DC01`.
-- Created local test identities and joined the Windows client to the domain.
-- Observed successful domain-membership and secure-channel validation.
-- Inspected DNS zone and lab host records.
+## Progress highlights
 
-## Learning path
+### October 21, 2026 — Hybrid sync configuration
+- Completed Microsoft Entra Connect Sync configuration wizard.
+- Wizard reported configuration succeeded and synchronization was initiated.
+- Password hash synchronization was selected; source anchor displayed as `mS-DS-ConsistencyGuid`.
+- Follow-up: scope review, service/scheduler health, connector errors, and pilot identity confirmation.
 
-| Stage | What you'll build | Evidence to capture |
-|---|---|---|
-| 01 — Foundation | VirtualBox network, VM roles, checkpoints | VM settings and network diagram |
-| 02 — Active Directory | AD DS, DNS, users, groups, domain join | ADUC, domain details, validation output |
-| 03 — Service accounts | KDS root key and a test gMSA | Root-key state, authorized host validation, sanitized output |
-| 04 — Entra ID | Tenant, cloud-only user, cloud group, admin safety | Sanitized tenant and object screenshots |
-| 05 — Hybrid identity | Install supported sync component and define pilot scope | Agent health, sync status, test-user validation |
-| 06 — Okta SSO | Test app, sign-in flow, access decisions | App configuration overview and redacted test results |
-| 07 — Hardening | Least privilege, sign-in controls, recovery plan | Security checklist and troubleshooting records |
+### October 19–20, 2026 — Local identity foundation
+- Configured AD DS and DNS on Windows Server 2019 `DC01`.
+- Created local lab identities and joined `CLIENT01` to the domain.
+- Observed domain membership and secure-channel validation success.
+- Inspected DNS zone and lab records.
 
-## Repository map
+## Repository guide
 
-- [`docs/architecture.md`](docs/architecture.md) — design, components, and target-state diagram
-- [`docs/network-design.md`](docs/network-design.md) — network assumptions, DNS, and connectivity checks
-- [`docs/build-guide.md`](docs/build-guide.md) — milestone-based build and validation guide
-- [`docs/troubleshooting.md`](docs/troubleshooting.md) — repeatable diagnostic workflow
-- [`docs/kds-gmsa-readiness.md`](docs/kds-gmsa-readiness.md) — KDS root-key checks and gMSA validation checklist
-- [`diagrams/authentication-flow.mmd`](diagrams/authentication-flow.mmd) — editable authentication-flow diagram
-- [`labs/`](labs/) — step-by-step lab exercises
-- [`scripts/`](scripts/) — validation and automation scripts
-- [`screenshots/`](screenshots/) — visual evidence, organized by milestone
-- [`progress/roadmap.md`](progress/roadmap.md) — completion checklist and next actions
-- [`progress/session-log.md`](progress/session-log.md) — dated accomplishment and status log
+- `docs/` — architecture, network design, build guide, troubleshooting, and KDS/gMSA readiness
+- `labs/` — practical exercises
+- `scripts/` — validation and automation
+- `diagrams/` — editable diagrams
+- `screenshots/` — intended home for sanitized milestone evidence (upload still pending)
+- `progress/roadmap.md` — task checklist and current status
+- `progress/session-log.md` — dated milestones and evidence notes
+
+## What this project demonstrates
+
+- Active Directory Domain Services and DNS foundations
+- Windows domain join and secure-channel troubleshooting
+- PowerShell-based validation and operational checks
+- Cloud identity object administration
+- Hybrid identity configuration and evidence-led verification
+- Security-aware lab documentation, scope review, and troubleshooting discipline
 
 ## Validation quick start
 
-Run these from the appropriate lab machine and compare the results with the documented expected state.
-
-**On the domain controller (elevated PowerShell):**
+**On DC01 (elevated PowerShell):**
 ```powershell
 Get-ADDomain
 Get-ADForest
@@ -120,7 +133,7 @@ dcdiag /test:dns /v
 Get-KdsRootKey
 ```
 
-**On the domain-joined client:**
+**On CLIENT01:**
 ```powershell
 ipconfig /all
 nslookup skrillsam.org
@@ -129,27 +142,22 @@ Test-ComputerSecureChannel -Verbose
 (Get-CimInstance Win32_ComputerSystem).PartOfDomain
 ```
 
-For a gMSA, validate from an authorized test host with the Active Directory module available:
+**For gMSA practice:** from an authorized test host with the AD module:
 ```powershell
 Test-ADServiceAccount -Identity <gMSAName>
 ```
 
-For Entra ID, confirm the active directory/tenant in the portal before changing configuration. A cloud-only user is not evidence of directory synchronization. Do not mark hybrid identity complete until a supported sync agent is installed, healthy, scoped intentionally, and a pilot identity is validated end-to-end.
+Run commands in the appropriate context; compare with documented expected behavior and record actual results. For sync, check the Connect Sync service, scheduler, connector status, errors, and a test identity before claiming success.
 
-## Security and evidence standards
+## Security and portfolio standards
 
-- Never commit passwords, access tokens, private keys, recovery codes, or exported credential files.
-- Use dedicated test identities and least-privilege access for experiments.
+- Never commit passwords, tokens, recovery codes, private keys, client secrets, or credential exports.
+- Use test identities and least privilege. Review synchronization scope before broad directory sync.
 - Keep domain controllers and management interfaces off the public internet.
-- Redact personal identifiers, tenant IDs where unnecessary, public IPs, and employer/customer information in screenshots.
-- Take a VM snapshot before high-impact changes and document rollback steps.
-- For each lab, record the objective, commands or UI steps, expected result, observed result, and remediation.
-- Do not mark a feature complete based only on opening a portal or starting a wizard; capture a successful validation result.
-
-## What this project demonstrates
-
-Hands-on identity infrastructure, Active Directory and DNS troubleshooting, PowerShell validation, cloud identity object administration, hybrid identity readiness assessment, SSO concepts, security-minded documentation, and evidence-based problem solving.
+- Sanitize screenshots: remove secrets, personal details, unnecessary tenant identifiers, public IPs, and employer/customer information.
+- Record objective, steps, expected result, observed result, and remediation.
+- Only label a milestone complete when supporting validation evidence exists.
 
 ---
 
-**Built as a learning portfolio.** Features marked *planned* or *not configured* are not represented as implemented until configuration and validation evidence are documented.
+*Learning portfolio. Status labels distinguish completed, observed, configured, validating, and planned work. Integration claims will be updated as new evidence is captured.*

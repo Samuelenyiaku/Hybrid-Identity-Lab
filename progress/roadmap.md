@@ -31,18 +31,18 @@ See [KDS root key and gMSA readiness](../docs/kds-gmsa-readiness.md).
 - [ ] Document licensing and supported integration prerequisites
 
 ## Hybrid identity synchronization
-- [x] Inspect the Entra Cloud Sync Agents area
-- [x] Record observed result: **No results**; no provisioning agent is currently installed
-- [ ] Choose a supported synchronization architecture for the actual tenant and lab requirements
-- [ ] Verify current Microsoft prerequisites, permissions, licensing, and supported server OS
-- [ ] Install and register the required agent on a supported, domain-joined server
-- [ ] Confirm agent health in the Entra portal
-- [ ] Define a dedicated pilot OU and a small test-user scope
-- [ ] Configure synchronization
-- [ ] Validate a pilot identity and sync health end-to-end
-- [ ] Document rollback and troubleshooting
+- [x] Select and run Microsoft Entra Connect Sync configuration wizard
+- [x] Wizard reported configuration succeeded
+- [x] Wizard reported that the synchronization process was initiated
+- [x] Record selected password hash synchronization and `mS-DS-ConsistencyGuid` source anchor
+- [ ] Verify the Connect Sync service and scheduler are healthy
+- [ ] Run or inspect an initial synchronization cycle and review errors
+- [ ] Confirm the intended pilot OU/user scope is correct and least-privilege
+- [ ] Verify a known on-premises test identity appears in Entra ID with expected attributes
+- [ ] Confirm password hash sync behavior where appropriate and safe to test
+- [ ] Document observed results, troubleshooting, and rollback
 
-**Status:** synchronization is not configured. Do not describe the environment as hybrid-synchronized until a pilot identity successfully synchronizes and the result is verified.
+**Status:** wizard configuration completed; end-to-end synchronization remains unvalidated until a pilot identity and sync health are confirmed.
 
 ## Okta SSO
 - [ ] Choose a non-production test application

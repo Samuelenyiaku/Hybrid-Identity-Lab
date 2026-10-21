@@ -17,45 +17,62 @@ Validation to keep on file:
 
 Reported complete:
 - [x] AD domain configured as `skrillsam.org`.
-- [x] Test identities created.
+- [x] Test identities created in on-premises AD.
 - [x] Windows client joined to the domain.
+- [x] Client domain-membership and secure-channel validation observed as successful.
+- [x] DNS zone and lab records inspected.
 
-Validation:
+Validation to retain:
 - [ ] On the DC, run `Get-ADDomain`, `Get-ADForest`, and `dcdiag /test:dns /v`.
 - [ ] On the client, run `nltest /dsgetdc:skrillsam.org`.
 - [ ] Sign in using a dedicated standard test account.
 - [ ] Capture AD Users and Computers and successful validation output with sensitive details redacted.
 
-## Milestone 3 — Microsoft Entra tenant
+Known lab network values:
+- Domain controller: `DC01`, Windows Server 2019, host-only address `192.168.56.10`.
+- Windows client: `CLIENT01`, host-only address `192.168.56.20`.
+- Domain: `skrillsam.org`.
 
-Status: **Next**
+## Milestone 3 — Microsoft Entra ID
 
-1. Sign in to Microsoft using the personal account and review the available Entra tenant / trial options in the official Microsoft portal.
-2. Create or select a dedicated lab organizational tenant if eligible. A personal Microsoft account by itself is not an organizational directory.
-3. Record the tenant's verified domain and initial administrative access recovery method in a private, secure location—not in this repository.
-4. Configure MFA for administrators and use a separate standard test identity for lab tests where possible.
-5. Confirm the portal opens the intended directory before configuring integrations.
+**Status: Initial tenant and cloud objects created; hardening and evidence capture remain.**
 
-Do not assume a free trial or license is available until the portal confirms current eligibility and terms.
+Completed:
+- [x] Accessed a Microsoft Entra ID Free tenant for lab work.
+- [x] Created cloud-only test identity `Lab Cloud User`.
+- [x] Created cloud security group `SG-Cloud-Lab-Users`.
+
+Next steps:
+1. Confirm the correct directory is selected in the Entra portal before making changes.
+2. Review administrator access and recovery methods; keep recovery details outside Git.
+3. Enable strong authentication for administrative identities where available.
+4. Capture sanitized screenshots of the tenant context, cloud-only user, and group.
+5. Confirm current licensing and supported prerequisites before selecting a synchronization method.
+
+A cloud-only user or group is not synchronized from on-premises AD. Keep the local and cloud identities clearly distinguished until synchronization is configured and validated.
 
 ## Milestone 4 — Hybrid identity
 
-Status: **Planned**
+**Current status: Not configured.** The Entra Cloud Sync Agents area returned **No results** during the latest lab session, and no provisioning agent is installed.
 
 Before installing or configuring synchronization:
-- [ ] Choose the supported Microsoft synchronization approach for the lab's requirements.
-- [ ] Review current Microsoft prerequisites and supported OS versions.
+- [ ] Select a supported Microsoft synchronization approach for the lab's requirements.
+- [ ] Review current Microsoft prerequisites, permissions, licensing, and supported OS versions.
+- [ ] Verify the active tenant and required administrative role.
+- [ ] Confirm the server selected for the agent is supported and domain-joined.
 - [ ] Define a dedicated pilot OU and a small test-user scope.
 - [ ] Take a VM snapshot and record rollback steps.
-- [ ] Configure the synchronization component using official guidance.
+- [ ] Install and register the synchronization agent using current official Microsoft guidance.
+- [ ] Confirm the agent appears healthy in the portal.
+- [ ] Configure synchronization for the intended pilot scope.
 - [ ] Validate one pilot identity end-to-end and check sync health.
-- [ ] Document the observed result and any remediation.
+- [ ] Document observed results and any remediation.
 
-Do not sync every lab object by default. Keep the initial scope small and intentional.
+Do not sync every lab object by default. Keep the initial scope small and intentional. Do not mark this milestone complete until a pilot identity has actually synchronized and the result has been verified.
 
 ## Milestone 5 — Okta SSO
 
-Status: **Planned**
+**Status: Planned.**
 
 - [ ] Choose a test application and document its supported SSO protocol.
 - [ ] Decide and diagram the intended relationship between Entra ID, Okta, and the application.
@@ -70,3 +87,4 @@ Status: **Planned**
 - [ ] Add exact validation steps and observed outputs to each lab.
 - [ ] Update the status table in the README when evidence supports a status change.
 - [ ] Review the repository for secrets before every public commit.
+- [ ] Verify README links and Mermaid diagrams render on GitHub.

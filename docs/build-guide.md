@@ -53,22 +53,19 @@ A cloud-only user or group is not synchronized from on-premises AD. Keep the loc
 
 ## Milestone 4 — Hybrid identity
 
-**Current status: Not configured.** The Entra Cloud Sync Agents area returned **No results** during the latest lab session, and no provisioning agent is installed.
+**Current status: Connect Sync configuration wizard completed; end-to-end validation pending.** The wizard reported successful configuration and that synchronization was initiated. The displayed options included password hash synchronization and `mS-DS-ConsistencyGuid` as the source anchor.
 
-Before installing or configuring synchronization:
-- [ ] Select a supported Microsoft synchronization approach for the lab's requirements.
-- [ ] Review current Microsoft prerequisites, permissions, licensing, and supported OS versions.
-- [ ] Verify the active tenant and required administrative role.
-- [ ] Confirm the server selected for the agent is supported and domain-joined.
-- [ ] Define a dedicated pilot OU and a small test-user scope.
-- [ ] Take a VM snapshot and record rollback steps.
-- [ ] Install and register the synchronization agent using current official Microsoft guidance.
-- [ ] Confirm the agent appears healthy in the portal.
-- [ ] Configure synchronization for the intended pilot scope.
-- [ ] Validate one pilot identity end-to-end and check sync health.
-- [ ] Document observed results and any remediation.
+Next validation steps:
+- [ ] Confirm the correct tenant and forest connectors are configured.
+- [ ] Check the Microsoft Entra Connect Sync service and scheduler state.
+- [ ] Review Synchronization Service Manager / connector status for import, sync, and export errors.
+- [ ] Confirm the intended pilot OU/user scope is correct. If the wizard was configured to synchronize all users and devices, review and narrow the scope before treating the lab as production-like.
+- [ ] Trigger or inspect an initial synchronization cycle.
+- [ ] Verify a known on-premises test identity appears in Entra ID and check its source/attributes.
+- [ ] Document the actual observed result and any remediation.
+- [ ] Capture sanitized screenshots of service health and successful pilot identity validation.
 
-Do not sync every lab object by default. Keep the initial scope small and intentional. Do not mark this milestone complete until a pilot identity has actually synchronized and the result has been verified.
+Do not claim end-to-end hybrid identity is working based only on the wizard's success message. Keep the initial sync scope small and intentional.
 
 ## Milestone 5 — Okta SSO
 

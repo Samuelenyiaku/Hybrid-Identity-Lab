@@ -45,3 +45,22 @@ This log records verified or directly observed milestones. Update it after meani
 - Never commit passwords, tokens, recovery codes, private keys, or other secrets.
 - Do not include tenant identifiers or personal account details unless there is a clear portfolio need.
 - Record actual observed outputs; do not mark a milestone complete based only on opening a portal or starting a wizard.
+
+
+## October 21, 2026 — Microsoft Entra Connect Sync configuration
+
+### Completed
+- Completed the Microsoft Entra Connect Sync configuration wizard.
+- The final wizard screen explicitly reported: configuration succeeded and the synchronization process had been initiated.
+- The wizard selected password hash synchronization and displayed `mS-DS-ConsistencyGuid` as the source anchor attribute.
+- The wizard showed the on-premises forest `SkrillSam.org` and the lab Entra tenant domain.
+
+### Validation still required
+- Check the synchronization service and scheduler are running and healthy.
+- Review connector import/synchronization/export status and any errors.
+- Verify a known on-premises test user appears in Entra ID with the expected attributes.
+- Confirm the synchronization scope is appropriate for a lab. One wizard screen showed the option to synchronize all users and devices selected; review that choice and narrow the scope if needed.
+- Do not mark end-to-end hybrid synchronization complete until the pilot identity has been verified.
+
+### Screenshot evidence
+- The lab screenshots from the Connect Sync wizard include the user/device filtering, optional features, ready-to-configure, and successful configuration screens. Add these screenshots to `screenshots/` after binary upload is completed and verify they render on GitHub.

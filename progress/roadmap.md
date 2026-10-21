@@ -1,12 +1,12 @@
 # Project Roadmap
 
-Update this checklist only after completing the corresponding test and recording evidence.
+Update this checklist only after completing the corresponding test and recording evidence. Cloud-only objects do not count as synchronized on-premises identities.
 
 ## Local foundation
 - [x] VirtualBox lab installed
 - [x] Snapshots created
 - [x] AD DS domain `skrillsam.org` configured
-- [x] Test identities created
+- [x] Test identities created in on-premises AD
 - [x] Windows client joined to the domain
 - [x] Client domain membership and secure-channel checks observed as successful
 - [x] DNS zone and lab records inspected
@@ -21,18 +21,28 @@ Update this checklist only after completing the corresponding test and recording
 
 See [KDS root key and gMSA readiness](../docs/kds-gmsa-readiness.md).
 
-## Cloud identity
-- [ ] Create/select a dedicated Microsoft Entra lab tenant
-- [ ] Verify tenant context and administrative recovery
-- [ ] Enable strong authentication for admin identities
+## Microsoft Entra ID — current progress
+- [x] Select/access Microsoft Entra ID Free lab tenant
+- [x] Create cloud-only test user: `Lab Cloud User`
+- [x] Create cloud security group: `SG-Cloud-Lab-Users`
+- [ ] Verify tenant context and administrative recovery details
+- [ ] Confirm strong authentication for admin identities
+- [ ] Capture sanitized screenshots of the tenant, user, and group
 - [ ] Document licensing and supported integration prerequisites
 
-## Hybrid identity
-- [ ] Select supported synchronization architecture
-- [ ] Define pilot OU and test scope
+## Hybrid identity synchronization
+- [x] Inspect the Entra Cloud Sync Agents area
+- [x] Record observed result: **No results**; no provisioning agent is currently installed
+- [ ] Choose a supported synchronization architecture for the actual tenant and lab requirements
+- [ ] Verify current Microsoft prerequisites, permissions, licensing, and supported server OS
+- [ ] Install and register the required agent on a supported, domain-joined server
+- [ ] Confirm agent health in the Entra portal
+- [ ] Define a dedicated pilot OU and a small test-user scope
 - [ ] Configure synchronization
-- [ ] Validate pilot identity and sync health
+- [ ] Validate a pilot identity and sync health end-to-end
 - [ ] Document rollback and troubleshooting
+
+**Status:** synchronization is not configured. Do not describe the environment as hybrid-synchronized until a pilot identity successfully synchronizes and the result is verified.
 
 ## Okta SSO
 - [ ] Choose a non-production test application
@@ -44,6 +54,8 @@ See [KDS root key and gMSA readiness](../docs/kds-gmsa-readiness.md).
 ## Portfolio quality
 - [x] Add architecture and network design documentation
 - [x] Add validation scripts with comments and safe defaults
+- [x] Record current Entra tenant, cloud user, group, and sync-agent discovery state
 - [ ] Verify README links and diagram rendering
 - [ ] Scan repository for secrets before public commits
+- [ ] Add sanitized screenshots and verify them on GitHub
 - [ ] Refresh status badges and milestone status

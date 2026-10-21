@@ -1,87 +1,121 @@
 # Build Guide
 
-This guide is organized as small milestones. Check off a step only after completing it and recording evidence.
+Follow these milestones in order. Each phase includes a status and validation target. Do not mark an integration complete until the test result is recorded.
+
+## At a glance
+
+1. VirtualBox foundation — prepared
+2. Active Directory + DNS — configured; key checks observed
+3. Microsoft Entra ID — initial tenant and cloud objects created
+4. Microsoft Entra Connect Sync — wizard configured; end-to-end validation pending
+5. KDS / gMSA — readiness and validation pending
+6. Okta SSO — planned
 
 ## Milestone 1 — VirtualBox foundation
 
-Reported complete:
-- [x] Windows Server virtual machines installed.
-- [x] Lab snapshots created.
+**Status: Prepared (reported).**
 
-Validation to keep on file:
-- [ ] Record VM names, OS versions, memory, CPU, and virtual network mode.
-- [ ] Capture a sanitized screenshot of the VM inventory.
-- [ ] Confirm a clean snapshot exists before major changes.
+- [x] Windows Server virtual machines installed
+- [x] Lab snapshots created
+- [ ] Record VM names, OS versions, memory, CPU, and network mode
+- [ ] Capture sanitized VM inventory and network settings
+- [ ] Confirm rollback snapshot before high-impact changes
 
-## Milestone 2 — Active Directory
+## Milestone 2 — Active Directory and DNS
 
-Reported complete:
-- [x] AD domain configured as `skrillsam.org`.
-- [x] Test identities created in on-premises AD.
-- [x] Windows client joined to the domain.
-- [x] Client domain-membership and secure-channel validation observed as successful.
-- [x] DNS zone and lab records inspected.
+**Status: Core setup complete; further evidence recommended.**
 
-Validation to retain:
-- [ ] On the DC, run `Get-ADDomain`, `Get-ADForest`, and `dcdiag /test:dns /v`.
-- [ ] On the client, run `nltest /dsgetdc:skrillsam.org`.
-- [ ] Sign in using a dedicated standard test account.
-- [ ] Capture AD Users and Computers and successful validation output with sensitive details redacted.
+- [x] AD DS domain `skrillsam.org` configured on Windows Server 2019 `DC01`
+- [x] On-premises test identities created
+- [x] `CLIENT01` joined to domain
+- [x] PowerShell domain membership `PartOfDomain = True` observed
+- [x] Successful client secure-channel validation observed
+- [x] DNS zone and lab records inspected
 
-Known lab network values:
-- Domain controller: `DC01`, Windows Server 2019, host-only address `192.168.56.10`.
-- Windows client: `CLIENT01`, host-only address `192.168.56.20`.
-- Domain: `skrillsam.org`.
+Known lab addresses: DC01 `192.168.56.10`; CLIENT01 `192.168.56.20`.
+
+**Suggested evidence checks**
+
+On DC01 (elevated PowerShell):
+```powershell
+Get-ADDomain
+Get-ADForest
+Get-Service DNS, NTDS, Netlogon
+dcdiag /test:dns /v
+```
+
+On CLIENT01:
+```powershell
+ipconfig /all
+nslookup skrillsam.org
+nltest /dsgetdc:skrillsam.org
+Test-ComputerSecureChannel -Verbose
+(Get-CimInstance Win32_ComputerSystem).PartOfDomain
+```
+
+Record outputs with sensitive identifiers redacted. Test with a dedicated standard user where appropriate.
 
 ## Milestone 3 — Microsoft Entra ID
 
-**Status: Initial tenant and cloud objects created; hardening and evidence capture remain.**
+**Status: Initial tenant access and cloud objects created.**
 
-Completed:
-- [x] Accessed a Microsoft Entra ID Free tenant for lab work.
-- [x] Created cloud-only test identity `Lab Cloud User`.
-- [x] Created cloud security group `SG-Cloud-Lab-Users`.
+- [x] Accessed the Entra ID Free lab tenant
+- [x] Created cloud-only test identity `Lab Cloud User`
+- [x] Created cloud security group `SG-Cloud-Lab-Users`
+- [ ] Confirm correct directory/tenant before administrative changes
+- [ ] Review administrator authentication and recovery practices
+- [ ] Capture sanitized tenant, user, and group evidence
+- [ ] Confirm relevant licensing and supported prerequisites
 
-Next steps:
-1. Confirm the correct directory is selected in the Entra portal before making changes.
-2. Review administrator access and recovery methods; keep recovery details outside Git.
-3. Enable strong authentication for administrative identities where available.
-4. Capture sanitized screenshots of the tenant context, cloud-only user, and group.
-5. Confirm current licensing and supported prerequisites before selecting a synchronization method.
+Cloud-only objects are not synchronized from on-premises AD. Keep identity origins distinct until a synced pilot is confirmed.
 
-A cloud-only user or group is not synchronized from on-premises AD. Keep the local and cloud identities clearly distinguished until synchronization is configured and validated.
+## Milestone 4 — Microsoft Entra Connect Sync
 
-## Milestone 4 — Hybrid identity
+**Status: Configured; operational and end-to-end validation pending.**
 
-**Current status: Connect Sync configuration wizard completed; end-to-end validation pending.** The wizard reported successful configuration and that synchronization was initiated. The displayed options included password hash synchronization and `mS-DS-ConsistencyGuid` as the source anchor.
+On October 21, 2026, the configuration wizard reported success and that synchronization was initiated. The wizard displayed password hash synchronization and `mS-DS-ConsistencyGuid` as the source anchor.
 
-Next validation steps:
-- [ ] Confirm the correct tenant and forest connectors are configured.
-- [ ] Check the Microsoft Entra Connect Sync service and scheduler state.
-- [ ] Review Synchronization Service Manager / connector status for import, sync, and export errors.
-- [ ] Confirm the intended pilot OU/user scope is correct. If the wizard was configured to synchronize all users and devices, review and narrow the scope before treating the lab as production-like.
-- [ ] Trigger or inspect an initial synchronization cycle.
-- [ ] Verify a known on-premises test identity appears in Entra ID and check its source/attributes.
-- [ ] Document the actual observed result and any remediation.
-- [ ] Capture sanitized screenshots of service health and successful pilot identity validation.
+### Next: validate in this order
 
-Do not claim end-to-end hybrid identity is working based only on the wizard's success message. Keep the initial sync scope small and intentional.
+1. **Review sync scope first.** One wizard screen showed “Synchronize all users and devices” selected. Confirm exactly what is in scope. For a learning lab, use an intentionally limited pilot scope where supported and appropriate.
+2. Confirm the correct forest and tenant connectors.
+3. Check the Microsoft Entra Connect Sync service and scheduler.
+4. Inspect Synchronization Service Manager connector import, sync, and export results. Note any errors without exposing account secrets.
+5. Trigger or inspect an initial sync cycle following the applicable product guidance.
+6. Verify one known on-premises pilot identity appears in Entra ID with expected source and attributes.
+7. Document actual outcomes, errors, recovery/rollback, and sanitized evidence.
 
-## Milestone 5 — Okta SSO
+**Completion gate:** do not claim hybrid identity synchronization is validated until sync health and the pilot identity are both verified. Wizard success alone is insufficient.
+
+## Milestone 5 — KDS root key and gMSA
+
+**Status: In progress.**
+
+- [ ] Check existing root-key state
+- [ ] Understand key readiness/safety interval before relying on it
+- [ ] Create a dedicated test gMSA if needed
+- [ ] Validate from an authorized host
+- [ ] Record sanitized output and troubleshooting
+
+See [KDS/gMSA readiness guide](kds-gmsa-readiness.md).
+
+## Milestone 6 — Okta SSO
 
 **Status: Planned.**
 
-- [ ] Choose a test application and document its supported SSO protocol.
-- [ ] Decide and diagram the intended relationship between Entra ID, Okta, and the application.
-- [ ] Configure the application integration in a non-production environment.
-- [ ] Test a permitted sign-in and a denied sign-in.
-- [ ] Record the result, troubleshooting steps, and sanitized evidence.
-- [ ] Never add client secrets, signing keys, or recovery codes to Git.
+- [ ] Choose a non-production application
+- [ ] Document target identity and sign-in flow
+- [ ] Select and document protocol
+- [ ] Configure integration and test successful and denied sign-ins
+- [ ] Record results, limitations, and sanitized evidence
 
-## Milestone 6 — Portfolio finish
+Never commit app secrets, signing keys, or recovery codes.
 
-- [ ] Add screenshots under `screenshots/`, grouped by milestone.
-- [ ] Add exact validation steps and observed outputs to each lab.
-- [ ] Update the status table in the README when evidence supports a status change.
-- [ ] Review the repository for secrets before every public commit.
-- [ ] Verify README links and Mermaid diagrams render on GitHub.
+## Milestone 7 — Portfolio polish
+
+- [ ] Upload screenshots under `screenshots/` and verify the images load
+- [ ] Link milestone evidence from README and relevant docs
+- [ ] Add expected and observed results for each completed validation
+- [ ] Verify internal links and diagrams render
+- [ ] Scan for secrets before publishing
+- [ ] Update roadmap and session log at each milestone

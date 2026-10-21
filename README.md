@@ -13,7 +13,7 @@
 
 A practical, evidence-driven lab for building and troubleshooting on-premises Active Directory, Microsoft Entra ID, identity synchronization, and Okta single sign-on. This repository distinguishes completed and observed work from planned integration so the portfolio remains technically accurate.
 
-> **Current milestone (October 21, 2026):** The local AD DS/DNS foundation and Windows client domain membership are validated. A Microsoft Entra ID Free tenant is in use, and a cloud-only test user plus a cloud security group have been created. Hybrid synchronization is **not configured**: the Entra Cloud Sync Agents view returned no results, and no provisioning agent has been installed. Okta SSO remains planned.
+> **Current milestone (October 21, 2026):** The local AD DS/DNS foundation and Windows client domain membership are validated. Microsoft Entra Connect Sync has now completed its configuration wizard successfully, and the synchronization process has been initiated. The next step is to verify agent/service health and confirm that a pilot on-premises identity actually appears in Entra ID. Do not mark end-to-end synchronization complete until that validation succeeds. Okta SSO remains planned.
 
 ## Lab at a glance
 
@@ -28,8 +28,8 @@ A practical, evidence-driven lab for building and troubleshooting on-premises Ac
 | Microsoft Entra ID tenant | Initial setup complete | Microsoft Entra ID Free tenant selected and portal access established |
 | Cloud-only test identity | Complete | `Lab Cloud User` created in Entra ID; separate from on-premises AD users |
 | Cloud security group | Complete | `SG-Cloud-Lab-Users` created for cloud identity exercises |
-| Entra Cloud Sync agent | Not installed | Cloud Sync Agents view showed no results; installation and prerequisite checks remain |
-| Hybrid identity synchronization | Not configured | No successful synchronization or synced identity has been validated yet |
+| Microsoft Entra Connect Sync | Configured; validation pending | Wizard reported configuration succeeded and synchronization was initiated; verify service health and sync results |
+| Hybrid identity synchronization | In progress | Configuration wizard completed; an end-to-end synchronized pilot identity is not yet confirmed |
 | KDS root key / gMSA | In progress | Check root-key state and effective safety interval before gMSA validation |
 | Okta SSO | Planned | No application integration or end-to-end SSO test documented yet |
 | Screenshot evidence | Pending repository verification | Add sanitized screenshots to `screenshots/` and verify that they render on GitHub |
@@ -68,12 +68,12 @@ flowchart LR
 
 ## Recent progress log
 
-### October 21, 2026 — Entra setup and synchronization readiness
-- Confirmed a Microsoft Entra ID Free tenant is available for the lab.
-- Created the cloud-only test identity `Lab Cloud User`.
-- Created the cloud security group `SG-Cloud-Lab-Users`.
-- Opened the Cloud Sync agent area; it returned **No results**.
-- Recorded the important boundary: no provisioning agent is installed and hybrid synchronization is not yet configured. Do not claim synced users or a working hybrid identity connection until an end-to-end test succeeds.
+### October 21, 2026 — Entra Connect Sync configured
+- Completed the Microsoft Entra Connect Sync configuration wizard successfully.
+- The wizard reported that the synchronization process had been initiated.
+- The wizard selected password hash synchronization and the `mS-DS-ConsistencyGuid` source anchor.
+- The wizard displayed forest `SkrillSam.org` and the Entra tenant domain used for the lab.
+- Next: verify the synchronization service and scheduler, inspect sync errors, and confirm a test identity from the intended on-premises scope appears in Entra ID. Wizard completion alone does not prove end-to-end sync health.
 
 ### October 19–20, 2026 — Local directory and client validation
 - Built the `skrillsam.org` AD DS domain on Windows Server 2019 `DC01`.

@@ -1,61 +1,69 @@
 # Project Roadmap
 
-Update this checklist only after completing the corresponding test and recording evidence. Cloud-only objects do not count as synchronized on-premises identities.
+This checklist reflects documented progress. Mark validation tasks complete only after observing and recording the result. A cloud-only object is not proof of a synchronized identity.
+
+## Current milestone — Hybrid identity synchronization
+
+**Current state:** Microsoft Entra Connect Sync configuration wizard succeeded and reported synchronization was initiated (October 21, 2026). End-to-end synchronization remains **unvalidated**.
+
+- [x] Run Microsoft Entra Connect Sync configuration wizard
+- [x] Wizard reported configuration succeeded
+- [x] Wizard reported synchronization process initiated
+- [x] Record password hash synchronization selection and `mS-DS-ConsistencyGuid` source anchor
+- [ ] Review synchronization scope (wizard showed “Synchronize all users and devices” selected); narrow to an intentional pilot if appropriate
+- [ ] Confirm Connect Sync service and scheduler are healthy
+- [ ] Inspect connector import/synchronization/export status and errors
+- [ ] Run or inspect initial synchronization cycle
+- [ ] Verify a known on-premises pilot identity appears in Entra ID with expected source and attributes
+- [ ] Document outcome, troubleshooting, and rollback
+- [ ] Capture sanitized sync-health and pilot-validation screenshots
 
 ## Local foundation
-- [x] VirtualBox lab installed
-- [x] Snapshots created
+- [x] VirtualBox lab and snapshots prepared (reported)
 - [x] AD DS domain `skrillsam.org` configured
-- [x] Test identities created in on-premises AD
-- [x] Windows client joined to the domain
-- [x] Client domain membership and secure-channel checks observed as successful
+- [x] On-premises test identities created
+- [x] Windows client joined to domain
+- [x] Client membership and secure-channel validation observed successful
 - [x] DNS zone and lab records inspected
-- [ ] Add the five local screenshot files to the repository and verify they render on GitHub
+- [ ] Retain a fresh, sanitized set of validation evidence
+- [ ] Upload the five reviewed Entra Connect wizard screenshots and verify they render
 
-## Active Directory service-account practice
-- [ ] Check existing KDS root-key state
-- [ ] Confirm the root key is effective after the applicable safety interval
+## Active Directory service accounts
+- [ ] Check current KDS root-key state
+- [ ] Confirm key readiness and applicable safety interval
 - [ ] Create a dedicated test gMSA if needed
-- [ ] Validate gMSA retrieval on an authorized test host
-- [ ] Add sanitized KDS/gMSA evidence and troubleshooting notes
+- [ ] Validate gMSA retrieval on authorized test host
+- [ ] Add sanitized evidence and troubleshooting notes
 
 See [KDS root key and gMSA readiness](../docs/kds-gmsa-readiness.md).
 
-## Microsoft Entra ID — current progress
-- [x] Select/access Microsoft Entra ID Free lab tenant
-- [x] Create cloud-only test user: `Lab Cloud User`
-- [x] Create cloud security group: `SG-Cloud-Lab-Users`
-- [ ] Verify tenant context and administrative recovery details
-- [ ] Confirm strong authentication for admin identities
-- [ ] Capture sanitized screenshots of the tenant, user, and group
-- [ ] Document licensing and supported integration prerequisites
+## Microsoft Entra ID
+- [x] Access Entra ID Free lab tenant
+- [x] Create cloud-only test user `Lab Cloud User`
+- [x] Create cloud security group `SG-Cloud-Lab-Users`
+- [ ] Verify tenant context and administrative recovery practices
+- [ ] Review strong authentication for administrator accounts
+- [ ] Capture sanitized tenant/user/group evidence
+- [ ] Document applicable licensing and supported integration prerequisites
 
-## Hybrid identity synchronization
-- [x] Select and run Microsoft Entra Connect Sync configuration wizard
-- [x] Wizard reported configuration succeeded
-- [x] Wizard reported that the synchronization process was initiated
-- [x] Record selected password hash synchronization and `mS-DS-ConsistencyGuid` source anchor
-- [ ] Verify the Connect Sync service and scheduler are healthy
-- [ ] Run or inspect an initial synchronization cycle and review errors
-- [ ] Confirm the intended pilot OU/user scope is correct and least-privilege
-- [ ] Verify a known on-premises test identity appears in Entra ID with expected attributes
-- [ ] Confirm password hash sync behavior where appropriate and safe to test
-- [ ] Document observed results, troubleshooting, and rollback
-
-**Status:** wizard configuration completed; end-to-end synchronization remains unvalidated until a pilot identity and sync health are confirmed.
-
-## Okta SSO
-- [ ] Choose a non-production test application
-- [ ] Document target sign-in architecture and protocol
-- [ ] Configure application integration
-- [ ] Validate successful and denied sign-ins
-- [ ] Add sanitized evidence and troubleshooting notes
+## Okta SSO — planned
+- [ ] Select a non-production test app
+- [ ] Document intended sign-in architecture and protocol
+- [ ] Configure app integration
+- [ ] Test permitted and denied sign-ins
+- [ ] Document results and sanitized evidence
 
 ## Portfolio quality
-- [x] Add architecture and network design documentation
-- [x] Add validation scripts with comments and safe defaults
-- [x] Record current Entra tenant, cloud user, group, and sync-agent discovery state
-- [ ] Verify README links and diagram rendering
-- [ ] Scan repository for secrets before public commits
-- [ ] Add sanitized screenshots and verify them on GitHub
-- [ ] Refresh status badges and milestone status
+- [x] Architecture and network design documentation
+- [x] Validation scripts and build guide
+- [x] Current progress and next actions reflected in README
+- [ ] Upload and verify screenshot evidence
+- [ ] Verify repository links and diagram rendering
+- [ ] Scan for secrets before public updates
+- [ ] Refresh status summaries as evidence changes
+
+## Status definitions
+- **Complete / validated:** observed successful result recorded
+- **Configured:** setup applied; operational result may remain unverified
+- **In progress / validating:** active work with validation outstanding
+- **Planned:** not implemented yet

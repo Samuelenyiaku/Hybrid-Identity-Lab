@@ -1,5 +1,35 @@
 # Lab Session Log
 
+## October 26, 2026 — Hybrid identity pilot and group sync validation
+
+### Pilot user and attribute validation
+- Confirmed provisioned AD pilot identity Ephraim Boss appears in Microsoft Entra ID, with on-premises synchronization enabled.
+- Changed the user's Department attribute in AD to `IT-Lab`; later observed `IT-Lab` in Entra, demonstrating attribute flow.
+- Observed Connect Sync feature output with `PasswordHashSync : True`.
+- User reported successful cloud sign-in for Ephraim Boss using the current AD password. Following an AD password reset and delta sync, the user again reported successful sign-in.
+- Qualification: this is reported practical sign-in testing; no sign-in log evidence was captured here to isolate the precise password hash authentication path.
+
+### Additional synced identity
+- Created on-premises user `Hybrid Test User`, SamAccountName `hybrid.test`, UPN `hybrid.test@SkrillSam.org`, Department `IT-Lab`.
+- User ran delta sync and confirmed the new account became visible in Entra.
+
+### Hybrid security group membership
+- Created AD Global Security group `IAM-Lab-Users` in `OU=LabUsers,DC=SkrillSam,DC=org`.
+- Added `Ephraim.boss` and `hybrid.test`.
+- PowerShell `Get-ADGroupMember` output showed Ephraim Boss and Hybrid Test User as members.
+- Ran `Start-ADSyncSyncCycle -PolicyType Delta`; result returned `Success`.
+- Entra `IAM-Lab-Users` Members page displayed **2 group members found**, both Ephraim Boss and Hybrid Test User under Direct members.
+- **Milestone validated:** pilot user provisioning, sample attribute synchronization, and group membership synchronization have demonstrated expected results.
+
+### Status / limitations / next action
+- Existing checks reported the ADSync service running, scheduler enabled, and successful connector import/synchronization/export operations.
+- Synchronization wizard had selected “Synchronize all users and devices.” Scope appropriateness still needs review.
+- Enterprise application group assignment/access tests have not been performed.
+- Conditional Access creation was unavailable due to tenant licensing; do not represent Conditional Access as configured.
+- Next planned core roadmap work: review sync scope/health, then inspect KDS root-key state/readiness before deciding whether to proceed with gMSA practice.
+- Screenshot evidence was supplied during lab mentoring, including the recent Entra Members view. Reuse available conversation evidence where possible; this does not establish that image files are committed/rendering in GitHub.
+
+
 ## October 26, 2026 — Progress documentation checkpoint
 
 - Reviewed README, roadmap, and prior session evidence against the currently recorded lab state.

@@ -1,5 +1,7 @@
 # Project Roadmap
 
+> **Documentation checkpoint · October 26, 2026:** Status reviewed against available recorded evidence. No new validation result was recorded; open checks below remain open.
+
 This checklist reflects documented progress. Mark validation tasks complete only after observing and recording the result. A cloud-only object is not proof of a synchronized identity.
 
 ## Current milestone — Hybrid identity synchronization

@@ -1,47 +1,45 @@
 # Screenshot Evidence
 
-This folder contains real screenshots captured from the lab. Preserve useful technical evidence: VM names and versions, lab domain names, lab user objects, private lab IP addresses, DNS records, PowerShell commands, and validation results should remain visible when they help demonstrate the build.
+This folder contains actual screenshots captured from the lab. Keep useful technical proof visible while removing secrets and unrelated private information.
 
 ## Evidence index
 
 | File | Destination | What it demonstrates |
 |---|---|---|
-| `01-virtualbox-lab-inventory.png` | [01-virtualbox](01-virtualbox/) | VirtualBox inventory: Windows Server 2022, Windows Server 2019, Windows Server 2025, Ubuntu, and Windows 11 client VMs; selected VM configuration and network adapters |
-| `02-active-directory-lab-users.png` | [02-active-directory](02-active-directory/) | Active Directory Users and Computers, the lab domain, LabUsers OU, and created test users |
-| `03-windows-client-domain-membership.png` | [02-active-directory](02-active-directory/) | Windows client computer name and successful domain membership |
-| `04-powershell-domain-validation.png` | [02-active-directory](02-active-directory/) | PowerShell domain discovery, domain-participation result, and secure-channel validation |
-| `05-domain-controller-dns-records.png` | [02-active-directory](02-active-directory/) | DNS forward lookup zone and lab host records |
+| `01-virtualbox-lab-inventory.png` | [01-virtualbox](01-virtualbox/) | VM inventory and visible network/configuration details |
+| `02-active-directory-lab-users.png` | [02-active-directory](02-active-directory/) | AD domain, LabUsers OU, and test users |
+| `03-windows-client-domain-membership.png` | [02-active-directory](02-active-directory/) | Windows client and domain membership |
+| `04-powershell-domain-validation.png` | [02-active-directory](02-active-directory/) | PowerShell domain discovery and validation |
+| `05-domain-controller-dns-records.png` | [02-active-directory](02-active-directory/) | DNS zone and lab records |
+| `08-image(20261026-141818).png` | [02-active-directory](02-active-directory/08-image%2820261026-141818%29.png) | Additional lab milestone evidence; individual caption pending visual review |
+| `09-image(20261026-145124).png` | [02-active-directory](02-active-directory/09-image%2820261026-145124%29.png) | Additional lab milestone evidence; individual caption pending visual review |
+| `10-image(20261026-145236).png` | [02-active-directory](02-active-directory/10-image%2820261026-145236%29.png) | Additional lab milestone evidence; individual caption pending visual review |
+| `11-image(20261026-145851).png` | [02-active-directory](02-active-directory/11-image%2820261026-145851%29.png) | Additional lab milestone evidence; individual caption pending visual review |
 
-### Additional committed files (October 26, 2026)
+## Evidence folders
 
-The following additional image files were found in `screenshots/02-active-directory/`. Their presence is verified by the GitHub directory listing; their visual contents and redaction quality have not been independently inspected in this review.
+- `01-virtualbox/` — VM foundation
+- `02-active-directory/` — AD DS, DNS, client validation, GPO, and gMSA
+- `03-entra-id/` — Entra tenant and identity evidence
+- `04-hybrid-sync/` — Connect Sync and hybrid identity evidence
+- `05-okta-sso/` — future Okta configuration and SSO tests
 
-- [08-image(20261026-141818).png](02-active-directory/08-image%2820261026-141818%29.png)
-- [09-image(20261026-145124).png](02-active-directory/09-image%2820261026-145124%29.png)
-- [10-image(20261026-145236).png](02-active-directory/10-image%2820261026-145236%29.png)
-- [11-image(20261026-145851).png](02-active-directory/11-image%2820261026-145851%29.png)
+## Publication state
 
-Rename or caption these using what each actually demonstrates after visually reviewing them. Do not infer the screenshot subject from timestamps or numbering.
+- [x] Foundation AD evidence files present
+- [x] Four additional image files committed under `02-active-directory/`
+- [ ] Individually inspect the four new images for subject, legibility, and redaction
+- [ ] Rename images based on actual contents and add meaningful captions
+- [ ] Open each new image in GitHub and confirm it renders
+- [ ] Add relevant Entra/hybrid synchronization evidence as it becomes available
+- [ ] Keep Okta evidence for future SSO milestones
 
-## Redaction approach
+The repository listing verifies that the files are present. It does not establish their individual contents or visual rendering.
 
-Use minimal, targeted redaction. Keep the lab evidence readable and technically meaningful.
+## Redaction standard
 
-**Keep visible when useful:** server operating-system versions, VM names, the `skrillsam.org` lab domain, lab test-user objects, private VirtualBox host-only addresses, DNS records, PowerShell commands, and successful/failed test results.
+**Keep visible when useful:** OS versions, lab VM/server names, `skrillsam.org`, lab test identities, private VirtualBox host-only addresses, commands, and validation results.
 
-**Redact only where appropriate:** personal email addresses, unrelated Windows profile paths, public IP addresses, product keys, passwords, tokens, recovery codes, private keys, authentication cookies, and unrelated personal or employer/customer information. Do not redact the Active Directory test-user list simply because it contains lab user names; the user has explicitly asked to keep those visible.
+**Redact:** passwords, tokens, recovery codes, private keys, authentication cookies, product keys, unnecessary public IPs, personal email addresses, and unrelated employer/customer details.
 
-## Windows Server 2022 evidence
-
-The VirtualBox inventory screenshot shows a Windows Server 2022 VM alongside Windows Server 2019, Windows Server 2025, Ubuntu, and Windows 11. This proves the VM is present in the lab inventory, but does not by itself prove every Server 2022 setup or configuration step. Add additional real screenshots from the Server 2022 setup sequence as they are available, and caption each with the actual step shown.
-
-## Publication checklist
-
-- [x] Confirm four additional dated image files exist in `02-active-directory/` via GitHub directory listing.
-- [ ] Visually inspect each new image and verify redactions and legibility.
-- [x] Earlier foundation evidence files exist in the destination folder.
-- [ ] Add meaningful captions/descriptions for the four new images.
-- [ ] Locate and publish the reviewed Entra Connect wizard screenshots; `04-hybrid-sync/` currently contains only its README.
-- [ ] Open each newly committed image from GitHub to verify it renders.
-
-These are real lab screenshots, not generated illustrations. Do not claim a milestone is complete unless the screenshot or test output supports it.
+Lab test objects and private lab IPs can remain visible when they support the technical demonstration. Avoid masking useful context unnecessarily.

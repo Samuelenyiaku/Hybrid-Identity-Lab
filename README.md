@@ -35,16 +35,17 @@
 | Group-based application access | Planned | No enterprise application assignment or access test recorded |
 | gMSA practice | **Core test validated** | Existing `gmsaLabSvc` usable on `WIN-7UDT986C0L5`; task `gMSA-Lab-Test` returned `0` and wrote output; runtime audit/evidence upload remain |
 | Okta SSO | Planned | No app integration or end-to-end test recorded |
-| Screenshot evidence | Pending | Wizard screenshots reviewed; repository upload/rendering still pending |
+| Screenshot evidence | Partially published | Four newly dated image files are present in `screenshots/02-active-directory/`; evidence inventory/index and remaining phase evidence need reconciliation |
 
 ### Next actions
 
-1. **Review synchronization scope.** The wizard showed “Synchronize all users and devices.” Confirm the configured scope is appropriate and narrow it to the intended lab scope if needed.
-2. **Review ongoing sync health and capture sanitized evidence** for service/scheduler, connector operations, and pilot identity results.
-3. **gMSA follow-up:** independently audit task runtime identity/events; capture sanitized evidence and upload it.
-4. Plan Okta SSO and further IAM application access practice after foundational checks.
+1. **Review and, if appropriate, narrow sync scope** from the wizard's broad “Synchronize all users and devices” selection.
+2. **Publish evidence accurately:** index the new AD screenshots; upload remaining sanitized sync/user/group and gMSA evidence where available.
+3. **gMSA follow-up:** audit scheduled-task runtime identity/events and decide whether to retain/remove the temporary task and script/output.
+4. Review ongoing connector health and errors; capture current results.
+5. Continue IAM app access/RBAC practice, then evaluate Okta tenant setup and SSO.
 
-> **Status integrity:** Wizard completion is not proof of successful end-to-end synchronization. A cloud-only Entra account is not an AD-synchronized identity.
+ > **Status integrity:** Pilot provisioning, observed attribute flow, and group membership sync have validation records. Cloud sign-in success was user-reported; a sign-in log isolating the password-hash path was not captured. Scope review and recurring health checks remain. Cloud-only `Lab Cloud User` is not an AD-synchronized identity.
 
 ## Architecture at a glance
 
@@ -92,6 +93,11 @@ flowchart LR
 | Authentication option shown | Password hash synchronization |
 
 ## Progress highlights
+
+### October 26, 2026 — Hybrid sync and gMSA validation (current checkpoint)
+- Validated pilot provisioning, sample attribute flow, and synchronized security-group membership; see dated session log entries.
+- Existing gMSA host-side usability and scheduled-task execution validated; runtime identity still requires independent audit.
+- Evidence status is mixed: the repository now contains additional AD screenshots, while the index and remaining phase evidence require reconciliation.
 
 ### October 26, 2026 — gMSA scheduled-task validation
 - Reused existing enabled gMSA `gmsaLabSvc`; no duplicate account created.

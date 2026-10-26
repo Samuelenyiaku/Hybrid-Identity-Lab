@@ -132,3 +132,17 @@ A chronological record of completed work, observed results, and outstanding vali
 - Avoid unnecessary personal details, tenant identifiers, public IPs, and employer/customer information.
 - Record objective, actions, expected result, observed result, and remediation.
 - Keep actual observations distinct from plans and assumptions.
+
+
+## October 26, 2026 — gMSA evidence publication checkpoint
+
+- User uploaded four additional image files to `screenshots/02-active-directory/`:
+  - `08-image(20261026-141818).png`
+  - `09-image(20261026-145124).png`
+  - `10-image(20261026-145236).png`
+  - `11-image(20261026-145851).png`
+- GitHub directory listing confirms the four files are committed on `main`.
+- Upload commit message: `Add gMSA validation and scheduled task evidence`.
+- The files were selected as milestone evidence. Individual visual contents, captions, redaction quality, and rendered previews still require review; filenames remain timestamp-style.
+- This supersedes earlier statements that the upload was unconfirmed. The independent runtime-identity audit remains pending.
+- Next: inspect and rename the evidence files based on their actual contents, verify they render, then continue with Okta tenant enrollment. Okta setup has not started.

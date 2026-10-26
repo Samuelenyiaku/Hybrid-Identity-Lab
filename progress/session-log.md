@@ -1,5 +1,33 @@
 # Lab Session Log
 
+## October 26, 2026 — Existing gMSA and scheduled-task test
+
+### Existing configuration inspected
+- Domain: `SkrillSam.org` (`SKRILLSAM`); DC discovery returned one controller, `WIN-FQBK0UD08AU.SkrillSam.org` at `192.168.56.10`.
+- Existing enabled gMSAs found: `provAgentgMSA` and `gmsaLabSvc`. Reused `gmsaLabSvc`; no duplicate was created.
+- gMSA DNS host name: `gmsaLabSvc.SkrillSam.org`.
+- Password retrieval principal: `gMSA-Server2022-Hosts`; membership output showed computer `WIN-7UDT986C0L5.
+- Server 2022 (`WIN-7UDT986C0L5`) discovered the existing KDS root key. `IsFormatValid=True`; creation/effective time displayed as October 20, 2026 11:30:33 AM.
+- On Server 2022, `Test-ADServiceAccount gmsaLabSvc` returned `True`.
+
+### Scheduled-task exercise
+- Created `C:\\gMSA-Lab\\gmsa-test.ps1`, which appends a timestamp to `C:\\gMSA-Lab\\gmsa-test.txt`.
+- Registered task `gMSA-Lab-Test` using configured principal `gmsaLabSvc, `LogonType=Password`, `RunLevel=Limited`.
+- Manually started the task. `Get-ScheduledTaskInfo` showed `LastTaskResult=0`; output file showed `gMSA scheduled task ran at 10/26/2026 10:40:30`.
+- Principal inspection confirmed configured `UserId=gmsaLabSvc.
+- **Observed milestone:** host-side gMSA validation and scheduled-task execution succeeded. Task configuration plus result/output support the test; independent event-level confirmation of runtime identity remains outstanding.
+
+### Policy inspection and caveats
+- Server 2022 security export listed `SKRILLSAM\\pGMSA_79da0118, `NT SERVICE\\ALL SERVICES`, and `NT SERVICE\\ADSync` for `SeServiceLogonRight`; `gmsaLabSvc` was not directly listed.
+- The `SeDenyServiceLogonRight` search produced no matching line in that export.
+- Default Domain Policy editor showed `Log on as a service` and `Deny log on as a service` as `Not Defined`. `gpresult /scope computer /r` showed Default Domain Policy applied.
+- A remote RSoP report attempt failed because user logging data was unavailable. No security policy was edited. Service-logon rights are distinct from batch-logon rights relevant to scheduled tasks.
+
+### Evidence and follow-up
+- User supplied screenshots in the mentoring conversation showing command results and task output. Screenshots are not yet confirmed uploaded/rendering in the repository.
+- Next: review Task Scheduler operational/security evidence for execution identity; decide whether to retain or remove the test task/files; upload sanitized screenshots.
+
+
 ## October 26, 2026 — Hybrid identity pilot and group sync validation
 
 ### Pilot user and attribute validation

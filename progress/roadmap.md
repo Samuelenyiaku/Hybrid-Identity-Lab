@@ -25,7 +25,8 @@ This checklist reflects documented progress. Mark validation tasks complete only
 - [x] Confirm Entra `IAM-Lab-Users` group has two direct members: Ephraim Boss and Hybrid Test User
 - [ ] Review synchronization scope (wizard showed “Synchronize all users and devices” selected); narrow to intended lab scope if appropriate
 - [ ] Continue periodic connector/sync health and error review
-- [ ] Capture/organize sanitized evidence files in GitHub and verify rendering
+- [ ] Reconcile evidence inventory/index with committed files; validate each image and update captions/links
+- [ ] Upload remaining sanitized sync/user/group and gMSA evidence where available
 - [ ] Document scope decision and applicable recovery/rollback considerations
 
 ## Local foundation
@@ -35,8 +36,8 @@ This checklist reflects documented progress. Mark validation tasks complete only
 - [x] Windows client joined to domain
 - [x] Client membership and secure-channel validation observed successful
 - [x] DNS zone and lab records inspected
-- [ ] Retain a fresh, sanitized set of validation evidence
-- [ ] Upload the five reviewed Entra Connect wizard screenshots and verify they render
+- [ ] Add/index fresh sanitized validation evidence and verify image rendering
+- [ ] Locate and publish the five reviewed Entra Connect wizard screenshots (not present in `screenshots/04-hybrid-sync/` as of this check)
 
 ## Active Directory service accounts — gMSA practice
 **Status: Core gMSA usability and scheduled-task exercise validated; auditing/evidence follow-up pending.**

@@ -1,473 +1,120 @@
 # Hybrid Identity Lab | Active Directory + Microsoft Entra ID
 
 > **Portfolio project · In progress**  
-> Building and validating an on-premises Active Directory environment, Microsoft Entra ID, hybrid identity synchronization, and eventually Okta SSO—with screenshots, repeatable checks, and troubleshooting notes.
+> Hands-on identity lab covering on-premises Active Directory, Microsoft Entra ID, hybrid synchronization, managed service accounts, and planned Okta SSO.
 
-**Current milestone (October 26, 2026):** Hybrid user provisioning, attribute flow, reported cloud sign-in testing, and synchronized security group membership are validated. Existing gMSA `gmsaLabSvc` passed host-side `Test-ADServiceAccount` on Server 2022, and scheduled task `gMSA-Lab-Test` completed with result `0` and wrote its output file. Runtime-identity auditing, sync-scope review, application access/RBAC, and Okta SSO remain outstanding.
+**Current checkpoint — October 26, 2026:** Hybrid pilot provisioning, sample attribute flow, and synchronized group membership have been validated. Existing gMSA `gmsaLabSvc` passed host-side validation on Server 2022; scheduled task `gMSA-Lab-Test` completed with result `0` and wrote its output. Okta SSO has not started.
 
-[Roadmap](progress/roadmap.md) · [Build guide](docs/build-guide.md) · [Session log](progress/session-log.md) · [Architecture](docs/architecture.md) · [Troubleshooting](docs/troubleshooting.md)
-
----
-
-## Start here
-
-| If you're… | Go here |
-|---|---|
-| A recruiter or reviewer | [Project status](#project-status) and [What this demonstrates](#what-this-project-demonstrates) |
-| Following the build | [Build guide](docs/build-guide.md) |
-| Looking for completed work | [Progress roadmap](progress/roadmap.md) and [Session log](progress/session-log.md) |
-| Troubleshooting | [Troubleshooting guide](docs/troubleshooting.md) |
-| Reviewing design | [Architecture](docs/architecture.md) · [Network design](docs/network-design.md) |
+[Roadmap](progress/roadmap.md) · [Build guide](docs/build-guide.md) · [Session log](progress/session-log.md) · [Architecture](docs/architecture.md) · [Troubleshooting](docs/troubleshooting.md) · [Screenshot evidence](screenshots/README.md)
 
 ## Project status
 
-| Workstream | Status | Verified / observed so far |
+| Workstream | Status | Validation boundary |
 |---|---|---|
-| VirtualBox foundation | Complete (reported) | Server VMs and snapshots prepared |
-| Active Directory + DNS | Validated foundation | Windows Server 2019 DC01; lab domain `skrillsam.org` |
-| Windows client | Validated | CLIENT01 joined; PowerShell reported `PartOfDomain = True`; successful secure-channel validation was observed |
-| Lab DNS | Validated checks | Zone/records inspected and name-resolution checks performed |
-| On-premises test identities | Created | Dedicated lab accounts for directory exercises |
-| Entra ID tenant | Initial setup | Tenant portal access established |
-| Cloud test objects | Created | Cloud-only `Lab Cloud User` and `SG-Cloud-Lab-Users` |
-| Entra Connect Sync | **Validated pilot sync** | AD pilot identities and attribute flow observed in Entra; PHS feature enabled; scheduler/service checks and sync operations reported successful; review scope and broader health/evidence remains |
-| Hybrid group sync | **Validated** | `IAM-Lab-Users` created in AD; Ephraim Boss and Hybrid Test User confirmed as Entra direct members |
-| Group-based application access | Planned | No enterprise application assignment or access test recorded |
-| gMSA practice | **Core test validated** | Existing `gmsaLabSvc` usable on `WIN-7UDT986C0L5`; task `gMSA-Lab-Test` returned `0` and wrote output; runtime audit/evidence upload remain |
-| Okta SSO | Planned | No app integration or end-to-end test recorded |
-| Screenshot evidence | Partially published | Four newly dated image files are present in `screenshots/02-active-directory/`; evidence inventory/index and remaining phase evidence need reconciliation |
-
-### Next actions
-
-1. **Review and, if appropriate, narrow sync scope** from the wizard's broad “Synchronize all users and devices” selection.
-2. **Publish evidence accurately:** index the new AD screenshots; upload remaining sanitized sync/user/group and gMSA evidence where available.
-3. **gMSA follow-up:** audit scheduled-task runtime identity/events and decide whether to retain/remove the temporary task and script/output.
-4. Review ongoing connector health and errors; capture current results.
-5. Continue IAM app access/RBAC practice, then evaluate Okta tenant setup and SSO.
-
- > **Status integrity:** Pilot provisioning, observed attribute flow, and group membership sync have validation records. Cloud sign-in success was user-reported; a sign-in log isolating the password-hash path was not captured. Scope review and recurring health checks remain. Cloud-only `Lab Cloud User` is not an AD-synchronized identity.
+| VirtualBox foundation | Prepared (reported) | Lab VMs/snapshots established; inventory details can be expanded |
+| Active Directory + DNS | Core foundation validated | Windows Server 2019 DC; `skrillsam.org`; DNS and client checks observed |
+| Windows client | Validated | `CLIENT01` domain membership and secure-channel validation observed |
+| Entra ID | Initial setup | Cloud-only `Lab Cloud User` and `SG-Cloud-Lab-Users` created |
+| Entra Connect Sync | Pilot validated | Service/scheduler and connector operations observed; pilot identity, attribute, and group results confirmed |
+| Password Hash Sync | Configured; sign-in reported | Feature output `True`; user reported successful sign-ins. No isolated PHS sign-in event captured |
+| Hybrid group sync | Validated | AD `IAM-Lab-Users`; Ephraim Boss and Hybrid Test User confirmed as direct members in Entra |
+| gMSA exercise | Core test validated | Existing account `gmsaLabSvc`; `Test-ADServiceAccount=True`; task result `0` and output file observed |
+| gMSA runtime identity audit | Pending | Task principal configured; independent runtime identity evidence not confirmed |
+| Application assignment / RBAC | Not tested | No application access allow/deny exercise documented |
+| Conditional Access | Not configured | Creation was unavailable due to tenant licensing |
+| Okta SSO | Planned | No tenant, app integration, or end-to-end test yet |
+| Evidence | Partially published | Four additional dated images in AD evidence folder; visual/caption/render check pending |
 
 ## Architecture at a glance
 
-The local directory/client relationship, pilot user sync, and hybrid group membership sync have been validated in the lab. Review of broad synchronization scope and ongoing health remains. Okta is future scope.
+The on-premises domain and client, pilot synchronization, sample attribute flow, and group membership sync have been demonstrated. Scope review and deeper ongoing health validation remain.
 
 ```mermaid
 flowchart LR
-  subgraph LAB["VirtualBox · Local lab"]
-    PC["CLIENT01 · Windows client"]
-    DC["DC01 · Windows Server 2019<br/>AD DS + DNS"]
-    USERS["On-prem test users"]
-    PC -->|"DNS + domain authentication"| DC
-    USERS --- DC
-  end
-  subgraph ENTRA["Microsoft Entra ID"]
-    CLOUD["Synced pilot identities"]
-    GROUP["IAM-Lab-Users · 2 direct members verified"]
-    CLOUD --- GROUP
-    CLOUDONLY["Cloud-only Lab Cloud User"]
+  subgraph LAB["VirtualBox local lab"]
+    CLIENT["CLIENT01 · Windows client"]
+    AD["AD DS + DNS · Server 2019"]
+    TESTUSERS["On-prem lab identities"]
+    CLIENT --> AD
+    TESTUSERS --- AD
   end
   SYNC["Microsoft Entra Connect Sync"]
-  DC -->|"pilot users and group"| SYNC
-  SYNC -->|"provisioning / membership confirmed"| ENTRA
-  subgraph LATER["Planned"]
-    OKTA["Okta SSO"]
-    APP["Non-production test app"]
+  subgraph CLOUD["Microsoft Entra ID"]
+    USERS["Synchronized pilot identities"]
+    GRP["IAM-Lab-Users · 2 direct members"]
+    ONLY["Cloud-only Lab Cloud User"]
+    USERS --- GRP
+  end
+  AD --> SYNC --> CLOUD
+  subgraph FUTURE["Planned"]
+    OKTA["Okta"]
+    APP["Non-production SAML test app"]
     OKTA -.-> APP
   end
-  ENTRA -. "future SSO design" .-> APP
 ```
 
 ## Lab environment
 
-| Component | Current reference |
+| Component | Reference |
 |---|---|
 | Hypervisor | Oracle VirtualBox |
-| Domain | `skrillsam.org` |
-| Domain controller | `DC01` · Windows Server 2019 |
+| AD domain | `skrillsam.org` |
+| Domain controller | Windows Server 2019 |
 | DC host-only IP | `192.168.56.10` |
 | Windows client | `CLIENT01` |
 | Client host-only IP | `192.168.56.20` |
-| Identity platform | Microsoft Entra ID |
-| Sync method | Microsoft Entra Connect Sync wizard configured |
+| Hybrid sync | Microsoft Entra Connect Sync |
 | Source anchor shown | `mS-DS-ConsistencyGuid` |
-| Authentication option shown | Password hash synchronization |
+| Authentication option selected | Password hash synchronization |
 
 ## Progress highlights
 
-### October 26, 2026 — Hybrid sync and gMSA validation (current checkpoint)
-- Validated pilot provisioning, sample attribute flow, and synchronized security-group membership; see dated session log entries.
-- Existing gMSA host-side usability and scheduled-task execution validated; runtime identity still requires independent audit.
-- Evidence status is mixed: the repository now contains additional AD screenshots, while the index and remaining phase evidence require reconciliation.
+### Hybrid identity
+- Pilot identity Ephraim Boss appeared in Entra as synchronized.
+- AD Department value `IT-Lab` was observed flowing to Entra.
+- `Hybrid Test User` was provisioned and appeared in Entra.
+- `IAM-Lab-Users` membership was synchronized; two direct members confirmed.
+- Delta sync returned `Success`.
 
-### October 26, 2026 — gMSA scheduled-task validation
-- Reused existing enabled gMSA `gmsaLabSvc`; no duplicate account created.
-- KDS root key was discoverable from Server 2022 and showed `IsFormatValid=True`; one domain controller was returned by discovery.
-- `gmsaLabSvc` permits retrieval through `gMSA-Server2022-Hosts`, which contains computer `WIN-7UDT986C0L5# Hybrid Identity Lab | Active Directory + Microsoft Entra ID
+### gMSA
+- Reused existing `gmsaLabSvc`; did not create a duplicate.
+- Retrieval group: `gMSA-Server2022-Hosts`.
+- Test host: `WIN-7UDT986C0L5`.
+- `Test-ADServiceAccount gmsaLabSvc` returned `True`.
+- Scheduled task `gMSA-Lab-Test` returned `LastTaskResult=0`; test output was written.
+- Independent runtime identity audit remains pending.
 
-> **Portfolio project · In progress**  
-> Building and validating an on-premises Active Directory environment, Microsoft Entra ID, hybrid identity synchronization, and eventually Okta SSO—with screenshots, repeatable checks, and troubleshooting notes.
+### Current next actions
+1. Begin Okta tenant enrollment and confirm actual plan/feature eligibility.
+2. Choose the intended SSO architecture and identity source before connecting systems.
+3. Configure a non-production SAML app and test both assigned and unassigned user paths.
+4. Review actual Entra Connect scope; a wizard step showed “Synchronize all users and devices.”
+5. Finish gMSA runtime identity audit and screenshot evidence cleanup.
 
-**Current milestone (October 26, 2026):** Hybrid user provisioning, attribute flow, reported cloud sign-in testing, and synchronized security group membership are validated. Existing gMSA `gmsaLabSvc` passed host-side `Test-ADServiceAccount` on Server 2022, and scheduled task `gMSA-Lab-Test` completed with result `0` and wrote its output file. Runtime-identity auditing, sync-scope review, application access/RBAC, and Okta SSO remain outstanding.
-
-[Roadmap](progress/roadmap.md) · [Build guide](docs/build-guide.md) · [Session log](progress/session-log.md) · [Architecture](docs/architecture.md) · [Troubleshooting](docs/troubleshooting.md)
-
----
-
-## Start here
-
-| If you're… | Go here |
-|---|---|
-| A recruiter or reviewer | [Project status](#project-status) and [What this demonstrates](#what-this-project-demonstrates) |
-| Following the build | [Build guide](docs/build-guide.md) |
-| Looking for completed work | [Progress roadmap](progress/roadmap.md) and [Session log](progress/session-log.md) |
-| Troubleshooting | [Troubleshooting guide](docs/troubleshooting.md) |
-| Reviewing design | [Architecture](docs/architecture.md) · [Network design](docs/network-design.md) |
-
-## Project status
-
-| Workstream | Status | Verified / observed so far |
-|---|---|---|
-| VirtualBox foundation | Complete (reported) | Server VMs and snapshots prepared |
-| Active Directory + DNS | Validated foundation | Windows Server 2019 DC01; lab domain `skrillsam.org` |
-| Windows client | Validated | CLIENT01 joined; PowerShell reported `PartOfDomain = True`; successful secure-channel validation was observed |
-| Lab DNS | Validated checks | Zone/records inspected and name-resolution checks performed |
-| On-premises test identities | Created | Dedicated lab accounts for directory exercises |
-| Entra ID tenant | Initial setup | Tenant portal access established |
-| Cloud test objects | Created | Cloud-only `Lab Cloud User` and `SG-Cloud-Lab-Users` |
-| Entra Connect Sync | **Validated pilot sync** | AD pilot identities and attribute flow observed in Entra; PHS feature enabled; scheduler/service checks and sync operations reported successful; review scope and broader health/evidence remains |
-| Hybrid group sync | **Validated** | `IAM-Lab-Users` created in AD; Ephraim Boss and Hybrid Test User confirmed as Entra direct members |
-| Group-based application access | Planned | No enterprise application assignment or access test recorded |
-| gMSA practice | **Core test validated** | Existing `gmsaLabSvc` usable on `WIN-7UDT986C0L5`; task `gMSA-Lab-Test` returned `0` and wrote output; runtime audit/evidence upload remain |
-| Okta SSO | Planned | No app integration or end-to-end test recorded |
-| Screenshot evidence | Pending | Wizard screenshots reviewed; repository upload/rendering still pending |
-
-### Next actions
-
-1. **Review synchronization scope.** The wizard showed “Synchronize all users and devices.” Confirm the configured scope is appropriate and narrow it to the intended lab scope if needed.
-2. **Review ongoing sync health and capture sanitized evidence** for service/scheduler, connector operations, and pilot identity results.
-3. **gMSA follow-up:** independently audit task runtime identity/events; capture sanitized evidence and upload it.
-4. Plan Okta SSO and further IAM application access practice after foundational checks.
-
-> **Status integrity:** Wizard completion is not proof of successful end-to-end synchronization. A cloud-only Entra account is not an AD-synchronized identity.
-
-## Architecture at a glance
-
-The local directory/client relationship, pilot user sync, and hybrid group membership sync have been validated in the lab. Review of broad synchronization scope and ongoing health remains. Okta is future scope.
-
-```mermaid
-flowchart LR
-  subgraph LAB["VirtualBox · Local lab"]
-    PC["CLIENT01 · Windows client"]
-    DC["DC01 · Windows Server 2019<br/>AD DS + DNS"]
-    USERS["On-prem test users"]
-    PC -->|"DNS + domain authentication"| DC
-    USERS --- DC
-  end
-  subgraph ENTRA["Microsoft Entra ID"]
-    CLOUD["Synced pilot identities"]
-    GROUP["IAM-Lab-Users · 2 direct members verified"]
-    CLOUD --- GROUP
-    CLOUDONLY["Cloud-only Lab Cloud User"]
-  end
-  SYNC["Microsoft Entra Connect Sync"]
-  DC -->|"pilot users and group"| SYNC
-  SYNC -->|"provisioning / membership confirmed"| ENTRA
-  subgraph LATER["Planned"]
-    OKTA["Okta SSO"]
-    APP["Non-production test app"]
-    OKTA -.-> APP
-  end
-  ENTRA -. "future SSO design" .-> APP
-```
-
-## Lab environment
-
-| Component | Current reference |
-|---|---|
-| Hypervisor | Oracle VirtualBox |
-| Domain | `skrillsam.org` |
-| Domain controller | `DC01` · Windows Server 2019 |
-| DC host-only IP | `192.168.56.10` |
-| Windows client | `CLIENT01` |
-| Client host-only IP | `192.168.56.20` |
-| Identity platform | Microsoft Entra ID |
-| Sync method | Microsoft Entra Connect Sync wizard configured |
-| Source anchor shown | `mS-DS-ConsistencyGuid` |
-| Authentication option shown | Password hash synchronization |
-
-## Progress highlights
-
-.
-- On Server 2022, `Test-ADServiceAccount gmsaLabSvc` returned `True`.
-- Created `C:\\gMSA-Lab\\gmsa-test.ps1` to append a timestamp to `C:\\gMSA-Lab\\gmsa-test.txt`.
-- Registered task `gMSA-Lab-Test` with configured principal `gmsaLabSvc# Hybrid Identity Lab | Active Directory + Microsoft Entra ID
-
-> **Portfolio project · In progress**  
-> Building and validating an on-premises Active Directory environment, Microsoft Entra ID, hybrid identity synchronization, and eventually Okta SSO—with screenshots, repeatable checks, and troubleshooting notes.
-
-**Current milestone (October 26, 2026):** Hybrid user provisioning, attribute flow, reported cloud sign-in testing, and synchronized security group membership are validated. Existing gMSA `gmsaLabSvc` passed host-side `Test-ADServiceAccount` on Server 2022, and scheduled task `gMSA-Lab-Test` completed with result `0` and wrote its output file. Runtime-identity auditing, sync-scope review, application access/RBAC, and Okta SSO remain outstanding.
-
-[Roadmap](progress/roadmap.md) · [Build guide](docs/build-guide.md) · [Session log](progress/session-log.md) · [Architecture](docs/architecture.md) · [Troubleshooting](docs/troubleshooting.md)
-
----
-
-## Start here
-
-| If you're… | Go here |
-|---|---|
-| A recruiter or reviewer | [Project status](#project-status) and [What this demonstrates](#what-this-project-demonstrates) |
-| Following the build | [Build guide](docs/build-guide.md) |
-| Looking for completed work | [Progress roadmap](progress/roadmap.md) and [Session log](progress/session-log.md) |
-| Troubleshooting | [Troubleshooting guide](docs/troubleshooting.md) |
-| Reviewing design | [Architecture](docs/architecture.md) · [Network design](docs/network-design.md) |
-
-## Project status
-
-| Workstream | Status | Verified / observed so far |
-|---|---|---|
-| VirtualBox foundation | Complete (reported) | Server VMs and snapshots prepared |
-| Active Directory + DNS | Validated foundation | Windows Server 2019 DC01; lab domain `skrillsam.org` |
-| Windows client | Validated | CLIENT01 joined; PowerShell reported `PartOfDomain = True`; successful secure-channel validation was observed |
-| Lab DNS | Validated checks | Zone/records inspected and name-resolution checks performed |
-| On-premises test identities | Created | Dedicated lab accounts for directory exercises |
-| Entra ID tenant | Initial setup | Tenant portal access established |
-| Cloud test objects | Created | Cloud-only `Lab Cloud User` and `SG-Cloud-Lab-Users` |
-| Entra Connect Sync | **Validated pilot sync** | AD pilot identities and attribute flow observed in Entra; PHS feature enabled; scheduler/service checks and sync operations reported successful; review scope and broader health/evidence remains |
-| Hybrid group sync | **Validated** | `IAM-Lab-Users` created in AD; Ephraim Boss and Hybrid Test User confirmed as Entra direct members |
-| Group-based application access | Planned | No enterprise application assignment or access test recorded |
-| gMSA practice | **Core test validated** | Existing `gmsaLabSvc` usable on `WIN-7UDT986C0L5`; task `gMSA-Lab-Test` returned `0` and wrote output; runtime audit/evidence upload remain |
-| Okta SSO | Planned | No app integration or end-to-end test recorded |
-| Screenshot evidence | Pending | Wizard screenshots reviewed; repository upload/rendering still pending |
-
-### Next actions
-
-1. **Review synchronization scope.** The wizard showed “Synchronize all users and devices.” Confirm the configured scope is appropriate and narrow it to the intended lab scope if needed.
-2. **Review ongoing sync health and capture sanitized evidence** for service/scheduler, connector operations, and pilot identity results.
-3. **gMSA follow-up:** independently audit task runtime identity/events; capture sanitized evidence and upload it.
-4. Plan Okta SSO and further IAM application access practice after foundational checks.
-
-> **Status integrity:** Wizard completion is not proof of successful end-to-end synchronization. A cloud-only Entra account is not an AD-synchronized identity.
-
-## Architecture at a glance
-
-The local directory/client relationship, pilot user sync, and hybrid group membership sync have been validated in the lab. Review of broad synchronization scope and ongoing health remains. Okta is future scope.
-
-```mermaid
-flowchart LR
-  subgraph LAB["VirtualBox · Local lab"]
-    PC["CLIENT01 · Windows client"]
-    DC["DC01 · Windows Server 2019<br/>AD DS + DNS"]
-    USERS["On-prem test users"]
-    PC -->|"DNS + domain authentication"| DC
-    USERS --- DC
-  end
-  subgraph ENTRA["Microsoft Entra ID"]
-    CLOUD["Synced pilot identities"]
-    GROUP["IAM-Lab-Users · 2 direct members verified"]
-    CLOUD --- GROUP
-    CLOUDONLY["Cloud-only Lab Cloud User"]
-  end
-  SYNC["Microsoft Entra Connect Sync"]
-  DC -->|"pilot users and group"| SYNC
-  SYNC -->|"provisioning / membership confirmed"| ENTRA
-  subgraph LATER["Planned"]
-    OKTA["Okta SSO"]
-    APP["Non-production test app"]
-    OKTA -.-> APP
-  end
-  ENTRA -. "future SSO design" .-> APP
-```
-
-## Lab environment
-
-| Component | Current reference |
-|---|---|
-| Hypervisor | Oracle VirtualBox |
-| Domain | `skrillsam.org` |
-| Domain controller | `DC01` · Windows Server 2019 |
-| DC host-only IP | `192.168.56.10` |
-| Windows client | `CLIENT01` |
-| Client host-only IP | `192.168.56.20` |
-| Identity platform | Microsoft Entra ID |
-| Sync method | Microsoft Entra Connect Sync wizard configured |
-| Source anchor shown | `mS-DS-ConsistencyGuid` |
-| Authentication option shown | Password hash synchronization |
-
-## Progress highlights
-
-, `LogonType=Password`, `RunLevel=Limited`. Manual start showed `LastTaskResult=0`; timestamp output was observed.
-- Task principal inspection confirmed configured `UserId=gmsaLabSvc# Hybrid Identity Lab | Active Directory + Microsoft Entra ID
-
-> **Portfolio project · In progress**  
-> Building and validating an on-premises Active Directory environment, Microsoft Entra ID, hybrid identity synchronization, and eventually Okta SSO—with screenshots, repeatable checks, and troubleshooting notes.
-
-**Current milestone (October 26, 2026):** Hybrid user provisioning, attribute flow, reported cloud sign-in testing, and synchronized security group membership are validated. Existing gMSA `gmsaLabSvc` passed host-side `Test-ADServiceAccount` on Server 2022, and scheduled task `gMSA-Lab-Test` completed with result `0` and wrote its output file. Runtime-identity auditing, sync-scope review, application access/RBAC, and Okta SSO remain outstanding.
-
-[Roadmap](progress/roadmap.md) · [Build guide](docs/build-guide.md) · [Session log](progress/session-log.md) · [Architecture](docs/architecture.md) · [Troubleshooting](docs/troubleshooting.md)
-
----
-
-## Start here
-
-| If you're… | Go here |
-|---|---|
-| A recruiter or reviewer | [Project status](#project-status) and [What this demonstrates](#what-this-project-demonstrates) |
-| Following the build | [Build guide](docs/build-guide.md) |
-| Looking for completed work | [Progress roadmap](progress/roadmap.md) and [Session log](progress/session-log.md) |
-| Troubleshooting | [Troubleshooting guide](docs/troubleshooting.md) |
-| Reviewing design | [Architecture](docs/architecture.md) · [Network design](docs/network-design.md) |
-
-## Project status
-
-| Workstream | Status | Verified / observed so far |
-|---|---|---|
-| VirtualBox foundation | Complete (reported) | Server VMs and snapshots prepared |
-| Active Directory + DNS | Validated foundation | Windows Server 2019 DC01; lab domain `skrillsam.org` |
-| Windows client | Validated | CLIENT01 joined; PowerShell reported `PartOfDomain = True`; successful secure-channel validation was observed |
-| Lab DNS | Validated checks | Zone/records inspected and name-resolution checks performed |
-| On-premises test identities | Created | Dedicated lab accounts for directory exercises |
-| Entra ID tenant | Initial setup | Tenant portal access established |
-| Cloud test objects | Created | Cloud-only `Lab Cloud User` and `SG-Cloud-Lab-Users` |
-| Entra Connect Sync | **Validated pilot sync** | AD pilot identities and attribute flow observed in Entra; PHS feature enabled; scheduler/service checks and sync operations reported successful; review scope and broader health/evidence remains |
-| Hybrid group sync | **Validated** | `IAM-Lab-Users` created in AD; Ephraim Boss and Hybrid Test User confirmed as Entra direct members |
-| Group-based application access | Planned | No enterprise application assignment or access test recorded |
-| gMSA practice | **Core test validated** | Existing `gmsaLabSvc` usable on `WIN-7UDT986C0L5`; task `gMSA-Lab-Test` returned `0` and wrote output; runtime audit/evidence upload remain |
-| Okta SSO | Planned | No app integration or end-to-end test recorded |
-| Screenshot evidence | Pending | Wizard screenshots reviewed; repository upload/rendering still pending |
-
-### Next actions
-
-1. **Review synchronization scope.** The wizard showed “Synchronize all users and devices.” Confirm the configured scope is appropriate and narrow it to the intended lab scope if needed.
-2. **Review ongoing sync health and capture sanitized evidence** for service/scheduler, connector operations, and pilot identity results.
-3. **gMSA follow-up:** independently audit task runtime identity/events; capture sanitized evidence and upload it.
-4. Plan Okta SSO and further IAM application access practice after foundational checks.
-
-> **Status integrity:** Wizard completion is not proof of successful end-to-end synchronization. A cloud-only Entra account is not an AD-synchronized identity.
-
-## Architecture at a glance
-
-The local directory/client relationship, pilot user sync, and hybrid group membership sync have been validated in the lab. Review of broad synchronization scope and ongoing health remains. Okta is future scope.
-
-```mermaid
-flowchart LR
-  subgraph LAB["VirtualBox · Local lab"]
-    PC["CLIENT01 · Windows client"]
-    DC["DC01 · Windows Server 2019<br/>AD DS + DNS"]
-    USERS["On-prem test users"]
-    PC -->|"DNS + domain authentication"| DC
-    USERS --- DC
-  end
-  subgraph ENTRA["Microsoft Entra ID"]
-    CLOUD["Synced pilot identities"]
-    GROUP["IAM-Lab-Users · 2 direct members verified"]
-    CLOUD --- GROUP
-    CLOUDONLY["Cloud-only Lab Cloud User"]
-  end
-  SYNC["Microsoft Entra Connect Sync"]
-  DC -->|"pilot users and group"| SYNC
-  SYNC -->|"provisioning / membership confirmed"| ENTRA
-  subgraph LATER["Planned"]
-    OKTA["Okta SSO"]
-    APP["Non-production test app"]
-    OKTA -.-> APP
-  end
-  ENTRA -. "future SSO design" .-> APP
-```
-
-## Lab environment
-
-| Component | Current reference |
-|---|---|
-| Hypervisor | Oracle VirtualBox |
-| Domain | `skrillsam.org` |
-| Domain controller | `DC01` · Windows Server 2019 |
-| DC host-only IP | `192.168.56.10` |
-| Windows client | `CLIENT01` |
-| Client host-only IP | `192.168.56.20` |
-| Identity platform | Microsoft Entra ID |
-| Sync method | Microsoft Entra Connect Sync wizard configured |
-| Source anchor shown | `mS-DS-ConsistencyGuid` |
-| Authentication option shown | Password hash synchronization |
-
-## Progress highlights
-
-. This is evidence of successful task execution with that configured principal; independent event-level/runtime identity verification remains a follow-up.
-- Service-logon-right inspection found `gmsaLabSvc` not directly listed in exported `SeServiceLogonRight`; no matching `SeDenyServiceLogonRight` line was found. No policy was changed. Task batch-logon permissions are distinct from service-logon rights.
-- Screenshots were supplied in chat but are not yet verified as committed/rendering in GitHub.
-
-### October 26, 2026 — Documentation checkpoint
-- Reviewed the repository status and latest recorded lab evidence.
-- No new technical validation output was available for this checkpoint; the last evidenced sync milestone remains the October 21 wizard success/initiation.
-- Kept end-to-end synchronization, pilot identity confirmation, and screenshot repository upload marked pending.
-
-
-### October 21, 2026 — Hybrid sync configuration
-- Completed Microsoft Entra Connect Sync configuration wizard.
-- Wizard reported configuration succeeded and synchronization was initiated.
-- Password hash synchronization was selected; source anchor displayed as `mS-DS-ConsistencyGuid`.
-- Follow-up: scope review, service/scheduler health, connector errors, and pilot identity confirmation.
-
-### October 19–20, 2026 — Local identity foundation
-- Configured AD DS and DNS on Windows Server 2019 `DC01`.
-- Created local lab identities and joined `CLIENT01` to the domain.
-- Observed domain membership and secure-channel validation success.
-- Inspected DNS zone and lab records.
+> **Status integrity:** Practical cloud sign-in was user-reported; the exact authentication path was not isolated in a captured sign-in log. Wizard completion is not itself proof of successful sync. Conditional Access is not configured. A cloud-only identity is not an AD-synchronized identity.
 
 ## Repository guide
 
-- `docs/` — architecture, network design, build guide, troubleshooting, and KDS/gMSA readiness
-- `labs/` — practical exercises
-- `scripts/` — validation and automation
-- `diagrams/` — editable diagrams
-- `screenshots/` — intended home for sanitized milestone evidence (upload still pending)
-- `progress/roadmap.md` — task checklist and current status
-- `progress/session-log.md` — dated milestones and evidence notes
+- `docs/` — build, architecture, network design, troubleshooting, and readiness references
+- `labs/` — lab procedures
+- `progress/` — roadmap and dated session log
+- `screenshots/` — milestone evidence grouped by phase
+- `scripts/` — repeatable checks
 
 ## What this project demonstrates
 
-- Active Directory Domain Services and DNS foundations
-- Windows domain join and secure-channel troubleshooting
-- PowerShell-based validation and operational checks
-- Cloud identity object administration
-- Hybrid identity configuration and evidence-led verification
-- Security-aware lab documentation, scope review, and troubleshooting discipline
+- Windows Server AD DS and DNS foundation
+- Domain join and identity troubleshooting
+- Hybrid user provisioning and attribute/group synchronization
+- Identity source and cloud-only versus synchronized object distinctions
+- gMSA host readiness and scheduled-task exercise
+- Evidence-based technical documentation and security-conscious redaction
+- Planned SAML SSO and IAM access validation
 
-## Validation quick start
+## Portfolio standards
 
-**On DC01 (elevated PowerShell):**
-```powershell
-Get-ADDomain
-Get-ADForest
-Get-Service DNS, NTDS, Netlogon
-dcdiag /test:dns /v
-Get-KdsRootKey
-```
-
-**On CLIENT01:**
-```powershell
-ipconfig /all
-nslookup skrillsam.org
-nltest /dsgetdc:skrillsam.org
-Test-ComputerSecureChannel -Verbose
-(Get-CimInstance Win32_ComputerSystem).PartOfDomain
-```
-
-**For gMSA practice:** from an authorized test host with the AD module:
-```powershell
-Test-ADServiceAccount -Identity <gMSAName>
-```
-
-Run commands in the appropriate context; compare with documented expected behavior and record actual results. For sync, check the Connect Sync service, scheduler, connector status, errors, and a test identity before claiming success.
-
-## Security and portfolio standards
-
-- Never commit passwords, tokens, recovery codes, private keys, client secrets, or credential exports.
-- Use test identities and least privilege. Review synchronization scope before broad directory sync.
-- Keep domain controllers and management interfaces off the public internet.
-- Sanitize screenshots: remove secrets, personal details, unnecessary tenant identifiers, public IPs, and employer/customer information.
-- Record objective, steps, expected result, observed result, and remediation.
-- Only label a milestone complete when supporting validation evidence exists.
-
----
-
-*Learning portfolio. Status labels distinguish completed, observed, configured, validating, and planned work. Integration claims will be updated as new evidence is captured.*
+- Separate observed results from configuration, user-reported outcomes, and plans.
+- Use test identities and non-production applications.
+- Never commit passwords, tokens, recovery codes, private keys, or authentication cookies.
+- Keep evidence concise, readable, and minimally redacted.
+- Record errors and limitations honestly.

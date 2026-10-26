@@ -1,24 +1,32 @@
 # Project Roadmap
 
-> **Documentation checkpoint · October 26, 2026:** Status reviewed against available recorded evidence. No new validation result was recorded; open checks below remain open.
+
 
 This checklist reflects documented progress. Mark validation tasks complete only after observing and recording the result. A cloud-only object is not proof of a synchronized identity.
 
-## Current milestone — Hybrid identity synchronization
+## Current milestone — Hybrid identity synchronization and groups
 
-**Current state:** Microsoft Entra Connect Sync configuration wizard succeeded and reported synchronization was initiated (October 21, 2026). End-to-end synchronization remains **unvalidated**.
+**Current state (October 26, 2026):** Pilot user provisioning, a sample attribute update, PHS feature configuration, and hybrid security group membership sync are validated through observed portal/PowerShell results and user-reported sign-in testing. Scope review and ongoing evidence-based health checks remain.
 
 - [x] Run Microsoft Entra Connect Sync configuration wizard
 - [x] Wizard reported configuration succeeded
 - [x] Wizard reported synchronization process initiated
 - [x] Record password hash synchronization selection and `mS-DS-ConsistencyGuid` source anchor
-- [ ] Review synchronization scope (wizard showed “Synchronize all users and devices” selected); narrow to an intentional pilot if appropriate
-- [ ] Confirm Connect Sync service and scheduler are healthy
-- [ ] Inspect connector import/synchronization/export status and errors
-- [ ] Run or inspect initial synchronization cycle
-- [ ] Verify a known on-premises pilot identity appears in Entra ID with expected source and attributes
-- [ ] Document outcome, troubleshooting, and rollback
-- [ ] Capture sanitized sync-health and pilot-validation screenshots
+- [x] Confirm Connect Sync service is running and scheduler settings enabled (observed)
+- [x] Observe successful AD import, sync, and export operations in Synchronization Service Manager
+- [x] Verify on-premises pilot user Ephraim Boss appears in Entra with on-premises sync enabled
+- [x] Verify `Department=IT-Lab` attribute flow from AD to Entra
+- [x] Observe PasswordHashSync feature set to True
+- [x] User reported successful Ephraim cloud sign-in using current AD password, including following password reset and delta sync (specific PHS sign-in log not captured)
+- [x] Provision `Hybrid Test User` from AD and confirm it appears in Entra
+- [x] Create AD Global Security group `IAM-Lab-Users` in `OU=LabUsers,DC=SkrillSam,DC=org`
+- [x] Add `Ephraim.boss` and `hybrid.test`; PowerShell membership query confirms both
+- [x] Run delta sync; result returned `Success`
+- [x] Confirm Entra `IAM-Lab-Users` group has two direct members: Ephraim Boss and Hybrid Test User
+- [ ] Review synchronization scope (wizard showed “Synchronize all users and devices” selected); narrow to intended lab scope if appropriate
+- [ ] Continue periodic connector/sync health and error review
+- [ ] Capture/organize sanitized evidence files in GitHub and verify rendering
+- [ ] Document scope decision and applicable recovery/rollback considerations
 
 ## Local foundation
 - [x] VirtualBox lab and snapshots prepared (reported)
@@ -47,6 +55,12 @@ See [KDS root key and gMSA readiness](../docs/kds-gmsa-readiness.md).
 - [ ] Review strong authentication for administrator accounts
 - [ ] Capture sanitized tenant/user/group evidence
 - [ ] Document applicable licensing and supported integration prerequisites
+
+## IAM / application access
+- [x] Create and validate synchronized security group `IAM-Lab-Users` with two direct members
+- [ ] Select a supported non-production enterprise application
+- [ ] Assign group-based access if app and tenant licensing support it
+- [ ] Test allowed and denied access paths; document boundaries
 
 ## Okta SSO — planned
 - [ ] Select a non-production test app

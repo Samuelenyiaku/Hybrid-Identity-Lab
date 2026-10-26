@@ -25,8 +25,8 @@ This checklist reflects documented progress. Mark validation tasks complete only
 - [x] Confirm Entra `IAM-Lab-Users` group has two direct members: Ephraim Boss and Hybrid Test User
 - [ ] Review synchronization scope (wizard showed “Synchronize all users and devices” selected); narrow to intended lab scope if appropriate
 - [ ] Continue periodic connector/sync health and error review
-- [ ] Reconcile evidence inventory/index with committed files; validate each image and update captions/links
-- [ ] Upload remaining sanitized sync/user/group and gMSA evidence where available
+- [x] Confirm four additional dated image files committed under `screenshots/02-active-directory/` (individual visual review, captions, and rendered previews remain pending)
+- [ ] Upload remaining sanitized sync/user/group evidence where available; the four gMSA-related image files have been committed, but their individual contents still need review
 - [ ] Document scope decision and applicable recovery/rollback considerations
 
 ## Local foundation
@@ -40,7 +40,7 @@ This checklist reflects documented progress. Mark validation tasks complete only
 - [ ] Locate and publish the five reviewed Entra Connect wizard screenshots (not present in `screenshots/04-hybrid-sync/` as of this check)
 
 ## Active Directory service accounts — gMSA practice
-**Status: Core gMSA usability and scheduled-task exercise validated; auditing/evidence follow-up pending.**
+**Status: Core gMSA usability and scheduled-task exercise validated; runtime identity audit pending. Four additional image files are committed; individual review remains pending.**
 
 - [x] Check existing KDS root-key state; key present and `IsFormatValid=True`
 - [x] Discover one domain controller in lab inventory
@@ -72,7 +72,8 @@ This checklist reflects documented progress. Mark validation tasks complete only
 - [x] Confirm Entra `IAM-Lab-Users` group has two direct members: Ephraim Boss and Hybrid Test User
 - [ ] Review synchronization scope (wizard showed “Synchronize all users and devices” selected); narrow to intended lab scope if appropriate
 - [ ] Continue periodic connector/sync health and error review
-- [ ] Capture/organize sanitized evidence files in GitHub and verify rendering
+- [x] Commit four additional dated image files to `screenshots/02-active-directory/`
+- [ ] Individually inspect, caption, and verify rendering of the four new images
 - [ ] Document scope decision and applicable recovery/rollback considerations
 
 ## Local foundation
@@ -203,7 +204,7 @@ See [KDS root key and gMSA readiness](../docs/kds-gmsa-readiness.md).
 - [x] Architecture and network design documentation
 - [x] Validation scripts and build guide
 - [x] Current progress and next actions reflected in README
-- [ ] Upload and verify screenshot evidence
+- [ ] Individually inspect and verify newly uploaded screenshots; update evidence captions/index
 - [ ] Verify repository links and diagram rendering
 - [ ] Scan for secrets before public updates
 - [ ] Refresh status summaries as evidence changes

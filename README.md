@@ -3,7 +3,7 @@
 > **Portfolio project · In progress**  
 > Building and validating an on-premises Active Directory environment, Microsoft Entra ID, hybrid identity synchronization, and eventually Okta SSO—with screenshots, repeatable checks, and troubleshooting notes.
 
-**Current milestone:** Microsoft Entra Connect Sync setup wizard completed successfully on October 21, 2026, and the wizard reported synchronization was initiated. **End-to-end sync is not yet verified.**
+**Current milestone (last verified evidence: October 21, 2026):** Microsoft Entra Connect Sync setup wizard completed successfully and reported synchronization was initiated. **End-to-end sync is not yet verified.** Documentation reviewed October 26, 2026; no newer technical validation result is recorded yet.
 
 [Roadmap](progress/roadmap.md) · [Build guide](docs/build-guide.md) · [Session log](progress/session-log.md) · [Architecture](docs/architecture.md) · [Troubleshooting](docs/troubleshooting.md)
 
@@ -90,6 +90,12 @@ flowchart LR
 | Authentication option shown | Password hash synchronization |
 
 ## Progress highlights
+
+### October 26, 2026 — Documentation checkpoint
+- Reviewed the repository status and latest recorded lab evidence.
+- No new technical validation output was available for this checkpoint; the last evidenced sync milestone remains the October 21 wizard success/initiation.
+- Kept end-to-end synchronization, pilot identity confirmation, and screenshot repository upload marked pending.
+
 
 ### October 21, 2026 — Hybrid sync configuration
 - Completed Microsoft Entra Connect Sync configuration wizard.

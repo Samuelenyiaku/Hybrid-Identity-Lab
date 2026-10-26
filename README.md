@@ -3,7 +3,7 @@
 > **Portfolio project · In progress**  
 > Building and validating an on-premises Active Directory environment, Microsoft Entra ID, hybrid identity synchronization, and eventually Okta SSO—with screenshots, repeatable checks, and troubleshooting notes.
 
-**Current milestone (last verified evidence: October 21, 2026):** Microsoft Entra Connect Sync setup wizard completed successfully and reported synchronization was initiated. **End-to-end sync is not yet verified.** Documentation reviewed October 26, 2026; no newer technical validation result is recorded yet.
+**Current milestone (October 26, 2026):** Hybrid user provisioning, attribute flow, reported cloud sign-in testing, and on-premises security group membership synchronization have been validated in the lab. Password hash synchronization is configured and the user reports successful sign-in testing. Application access/RBAC, KDS/gMSA, and Okta SSO remain future work.
 
 [Roadmap](progress/roadmap.md) · [Build guide](docs/build-guide.md) · [Session log](progress/session-log.md) · [Architecture](docs/architecture.md) · [Troubleshooting](docs/troubleshooting.md)
 
@@ -30,24 +30,25 @@
 | On-premises test identities | Created | Dedicated lab accounts for directory exercises |
 | Entra ID tenant | Initial setup | Tenant portal access established |
 | Cloud test objects | Created | Cloud-only `Lab Cloud User` and `SG-Cloud-Lab-Users` |
-| Entra Connect Sync | **Configured; validating** | Wizard succeeded and initiated sync; service, scope, connector health, and synced pilot still need validation |
+| Entra Connect Sync | **Validated pilot sync** | AD pilot identities and attribute flow observed in Entra; PHS feature enabled; scheduler/service checks and sync operations reported successful; review scope and broader health/evidence remains |
+| Hybrid group sync | **Validated** | `IAM-Lab-Users` created in AD; Ephraim Boss and Hybrid Test User confirmed as Entra direct members |
+| Group-based application access | Planned | No enterprise application assignment or access test recorded |
 | gMSA practice | In progress | KDS root-key readiness and gMSA validation still to do |
 | Okta SSO | Planned | No app integration or end-to-end test recorded |
 | Screenshot evidence | Pending | Wizard screenshots reviewed; repository upload/rendering still pending |
 
 ### Next actions
 
-1. **Review synchronization scope.** The wizard showed “Synchronize all users and devices.” Verify intended scope and narrow to a pilot OU/group if appropriate before proceeding.
-2. **Check sync health.** Confirm Microsoft Entra Connect Sync service/scheduler status and review connector import, synchronization, export, and errors.
-3. **Validate a pilot identity.** Verify one known on-premises test user appears in Entra ID with expected source and attributes.
-4. Capture sanitized evidence and record the observed outcome.
-5. Resume KDS/gMSA validation; plan Okta SSO after the identity foundation is stable.
+1. **Review synchronization scope.** The wizard showed “Synchronize all users and devices.” Confirm the configured scope is appropriate and narrow it to the intended lab scope if needed.
+2. **Review ongoing sync health and capture sanitized evidence** for service/scheduler, connector operations, and pilot identity results.
+3. **KDS/gMSA validation:** check key state/readiness before any gMSA exercise.
+4. Plan Okta SSO and further IAM application access practice after foundational checks.
 
 > **Status integrity:** Wizard completion is not proof of successful end-to-end synchronization. A cloud-only Entra account is not an AD-synchronized identity.
 
 ## Architecture at a glance
 
-The local directory/client relationship and cloud objects are established. The sync connection below is **configured but not yet end-to-end validated**; Okta is future scope.
+The local directory/client relationship, pilot user sync, and hybrid group membership sync have been validated in the lab. Review of broad synchronization scope and ongoing health remains. Okta is future scope.
 
 ```mermaid
 flowchart LR
@@ -59,13 +60,14 @@ flowchart LR
     USERS --- DC
   end
   subgraph ENTRA["Microsoft Entra ID"]
-    CLOUD["Cloud-only Lab Cloud User"]
-    GROUP["SG-Cloud-Lab-Users"]
+    CLOUD["Synced pilot identities"]
+    GROUP["IAM-Lab-Users · 2 direct members verified"]
     CLOUD --- GROUP
+    CLOUDONLY["Cloud-only Lab Cloud User"]
   end
   SYNC["Microsoft Entra Connect Sync"]
-  DC -. "configured · health/pilot pending" .-> SYNC
-  SYNC -. "sync initiated · result unverified" .-> ENTRA
+  DC -->|"pilot users and group"| SYNC
+  SYNC -->|"provisioning / membership confirmed"| ENTRA
   subgraph LATER["Planned"]
     OKTA["Okta SSO"]
     APP["Non-production test app"]
